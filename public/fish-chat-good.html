@@ -1,0 +1,2000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#0f172a">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoi8J+QnyBGaXNoIENoYXQiLCJzaG9ydF9uYW1lIjoiRmlzaCIsInN0YXJ0X3VybCI6Ii8iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjMGYxNzJhIiwidGhlbWVfY29sb3IiOiIjMGYxNzJhIiwiaWNvbnMiOlt7InNyYyI6ImRhdGE6aW1hZ2Uvc3ZnK3htbCwlM0NzdmcgeG1sbnM9J2h0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnJyB2aWV3Qm94PScwIDAgMTAwIDEwMCclM0UlM0N0ZXh0IHk9Jy45ZW0nIGZvbnQtc2l6ZT0nOTAnJTNF8J+QnyUzQy90ZXh0JTNFJTNDL3N2ZyUzRSIs"><!-- Base64 encoded manifest for PWA -->
+    <title>🐟 Fish Chat</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css" id="highlight-dark">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-light.min.css" id="highlight-light" disabled>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.3s ease-in-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        body.light-mode {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+        }
+        
+        #root {
+            height: 100%;
+        }
+        
+        /* Glassmorphism */
+        .glass {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(148, 163, 184, 0.1);
+        }
+        
+        .glass-strong {
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(30px);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+        }
+
+        /* Light mode glass */
+        .light-mode .glass {
+            background: rgba(255, 255, 255, 0.6);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(148, 163, 184, 0.15);
+        }
+        .light-mode .glass-strong {
+            background: rgba(248, 250, 252, 0.85);
+            backdrop-filter: blur(25px);
+            border: 1px solid rgba(148, 163, 184, 0.2);
+        }
+        
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: rgba(15, 23, 42, 0.5);
+        }
+
+        body.light-mode ::-webkit-scrollbar-track {
+            background: rgba(229, 231, 235, 0.5);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: rgba(59, 130, 246, 0.5);
+            border-radius: 4px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 130, 246, 0.7);
+        }
+        
+        /* Animations */
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes glow {
+            0%, 100% { box-shadow: 0 0 20px rgba(59, 130, 246, 0.3); }
+            50% { box-shadow: 0 0 30px rgba(59, 130, 246, 0.6); }
+        }
+        
+        .float-animation {
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        .glow-animation {
+            animation: glow 2s ease-in-out infinite;
+        }
+        
+        /* Auto-grow textarea */
+        textarea {
+            field-sizing: content;
+            max-height: 120px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect, useRef } = React;
+
+        // ============================================
+        // ERROR BOUNDARY
+        // ============================================
+        class ErrorBoundary extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = { hasError: false, error: null, errorInfo: null };
+            }
+
+            static getDerivedStateFromError(error) {
+                return { hasError: true };
+            }
+
+            componentDidCatch(error, errorInfo) {
+                console.error('React Error:', error, errorInfo);
+                this.setState({ error, errorInfo });
+            }
+
+            render() {
+                if (this.state.hasError) {
+                    return (
+                        <div className="h-full flex items-center justify-center p-4 bg-slate-900">
+                            <div className="glass-strong rounded-2xl p-8 max-w-2xl">
+                                <div className="text-6xl mb-4 text-center">💥</div>
+                                <h1 className="text-2xl font-bold text-white mb-4 text-center">
+                                    Fish crashed!
+                                </h1>
+                                <p className="text-slate-300 mb-4">
+                                    Something went wrong. Try refreshing the page.
+                                </p>
+                                <details className="text-xs text-slate-400 mb-4">
+                                    <summary className="cursor-pointer">Error details</summary>
+                                    <pre className="mt-2 p-2 bg-slate-800 rounded overflow-auto">
+                                        {this.state.error && this.state.error.toString()}
+                                    </pre>
+                                </details>
+                                <button
+                                    onClick={() => window.location.reload()}
+                                    className="w-full bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-lg transition-all"
+                                >
+                                    Reload Fish
+                                </button>
+                            </div>
+                        </div>
+                    );
+                }
+
+                return this.props.children;
+            }
+        }
+
+        // ============================================
+        // CONFIGURATION
+        // ============================================
+        const PROFILES = {
+            meatbrain: {
+                name: 'Andy',
+                description: 'Full chaos mode - all features',
+                emoji: '🐟',
+                showVoice: true,
+                showQuickActions: true,
+                responseStyle: 'default',
+                micSize: 'normal'
+            },
+            accounts: {
+                name: 'Sharon',
+                description: 'Type mode - detailed responses',
+                emoji: '📊',
+                showVoice: false,
+                showQuickActions: false,
+                responseStyle: 'detailed',
+                micSize: 'normal'
+            },
+            vanguy: {
+                name: 'Steve',
+                description: 'Voice mode - short answers',
+                emoji: '🚚',
+                showVoice: true,
+                showQuickActions: false,
+                responseStyle: 'short',
+                micSize: 'large'
+            }
+        };
+
+        const WORKER_URL = 'https://fish-api.buildyourfish.workers.dev';
+        const FISHBRAIN_URL = 'https://fishbrain.meatbag.com.au';
+        const FISHBRAIN_TOKEN = 'fish_d48aa0f949a6153f144cd6f560d08aa03d3e1e8b_2025';
+        
+        const TOKEN_ESTIMATES = {
+            // Rough estimates: ~4 chars per token
+            charToToken: 4,
+            // Model costs per million tokens (input / output)
+            costs: {
+                'claude-sonnet-4-20250514': { input: 3, output: 15 },
+                'claude-opus-4-20250514': { input: 15, output: 75 }
+            }
+        };
+        
+        // ============================================
+        // UTILITIES
+        // ============================================
+        
+        async function hashPassword(password) {
+            const encoder = new TextEncoder();
+            const data = encoder.encode(password);
+            const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+            const hashArray = Array.from(new Uint8Array(hashBuffer));
+            return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+        
+        function estimateTokens(text) {
+            return Math.ceil(text.length / TOKEN_ESTIMATES.charToToken);
+        }
+        
+        function calculateCost(inputTokens, outputTokens, model) {
+            const costs = TOKEN_ESTIMATES.costs[model] || TOKEN_ESTIMATES.costs['claude-sonnet-4-20250514'];
+            const inputCost = (inputTokens / 1000000) * costs.input;
+            const outputCost = (outputTokens / 1000000) * costs.output;
+            return (inputCost + outputCost).toFixed(4);
+        }
+
+        // ============================================
+        // LOCK SCREEN COMPONENT
+        // ============================================
+        
+        function LockScreen({ onUnlock }) {
+            const [password, setPassword] = useState('');
+            const [error, setError] = useState('');
+            const [loading, setLoading] = useState(false);
+
+            const handleUnlock = async (e) => {
+                e.preventDefault();
+                setLoading(true);
+                setError('');
+
+                // Check which profile the password matches
+                let matchedProfile = null;
+                for (const [key, profile] of Object.entries(PROFILES)) {
+                    const profileHash = await hashPassword(key);
+                    const inputHash = await hashPassword(password);
+
+                    if (inputHash === profileHash) {
+                        matchedProfile = { ...profile, key };
+                        break;
+                    }
+                }
+
+                if (matchedProfile) {
+                    localStorage.setItem('fish_unlock', await hashPassword(matchedProfile.key));
+                    localStorage.setItem('fish_profile', matchedProfile.key);
+                    onUnlock(matchedProfile);
+                } else {
+                    setError('Wrong password mate 🐟');
+                    setPassword('');
+                }
+
+                setLoading(false);
+            };
+            
+            return (
+                <div className="h-full flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
+                        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl"></div>
+                    </div>
+                    
+                    <div className="glass-strong rounded-2xl p-8 w-full max-w-md shadow-2xl animate-slide-up relative z-10">
+                        <div className="text-center mb-8">
+                            <div className="text-7xl mb-4 float-animation">🐟</div>
+                            <h1 className="text-3xl font-bold text-white mb-2">Fish Chat</h1>
+                            <p className="text-slate-400">Your escape from throttled Claude</p>
+                        </div>
+                        
+                        <form onSubmit={handleUnlock} className="space-y-4">
+                            <input
+                                type="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                placeholder="Enter password"
+                                className="w-full px-4 py-3 bg-slate-900/50 border border-slate-700 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                                autoFocus
+                            />
+                            
+                            {error && (
+                                <div className="text-red-400 text-sm text-center animate-fade-in">
+                                    {error}
+                                </div>
+                            )}
+                            
+                            <button
+                                type="submit"
+                                disabled={loading || !password}
+                                className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold py-3 rounded-lg hover:from-blue-600 hover:to-blue-700 transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                            >
+                                {loading ? 'Unlocking...' : 'Unlock'}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            );
+        }
+        
+        // ============================================
+        // CODE BLOCK COMPONENT
+        // ============================================
+
+        function CodeBlock({ code, language, isDarkMode }) {
+            const [copied, setCopied] = useState(false);
+            const codeRef = useRef(null);
+
+            useEffect(() => {
+                if (codeRef.current && window.hljs) {
+                    window.hljs.highlightElement(codeRef.current);
+                }
+            }, [code]);
+
+            const handleCopy = async () => {
+                try {
+                    await navigator.clipboard.writeText(code);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                } catch (err) {
+                    console.error('Failed to copy code:', err);
+                }
+            };
+
+            return (
+                <div className={`relative my-3 rounded-lg overflow-hidden ${isDarkMode ? 'bg-slate-900' : 'bg-slate-100'}`}>
+                    <div className={`flex items-center justify-between px-4 py-2 ${isDarkMode ? 'bg-slate-800 border-b border-slate-700' : 'bg-slate-200 border-b border-slate-300'}`}>
+                        <span className={`text-xs font-mono ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                            {language || 'code'}
+                        </span>
+                        <button
+                            onClick={handleCopy}
+                            className={`text-xs px-2 py-1 rounded ${
+                                copied
+                                    ? 'bg-green-500 text-white'
+                                    : `${isDarkMode ? 'bg-slate-700 hover:bg-slate-600 text-slate-300' : 'bg-white hover:bg-slate-50 text-slate-700'}`
+                            } transition-all`}
+                        >
+                            {copied ? '✓ Copied' : '📋 Copy'}
+                        </button>
+                    </div>
+                    <pre className="p-4 overflow-x-auto">
+                        <code ref={codeRef} className={`language-${language || 'plaintext'} text-sm`}>
+                            {code}
+                        </code>
+                    </pre>
+                </div>
+            );
+        }
+
+        // ============================================
+        // MESSAGE COMPONENT
+        // ============================================
+
+        function Message({ role, content, isStreaming, isDarkMode = true, timestamp, messageId, isEditing, onEdit, onSaveEdit, onCancelEdit, editedContent, onEditedContentChange, onRegenerate }) {
+            const [copied, setCopied] = useState(false);
+
+            // Parse markdown code blocks and images
+            const parseContent = (text) => {
+                const codeBlockRegex = /```(\w+)?\n([\s\S]*?)```/g;
+                const imageUrlRegex = /(https?:\/\/[^\s]+\.(?:jpg|jpeg|png|gif|webp|svg))/gi;
+                const parts = [];
+                let lastIndex = 0;
+                let match;
+
+                // First, extract code blocks
+                const codeMatches = [];
+                while ((match = codeBlockRegex.exec(text)) !== null) {
+                    codeMatches.push({
+                        start: match.index,
+                        end: match.index + match[0].length,
+                        type: 'code',
+                        language: match[1] || 'plaintext',
+                        content: match[2].trim()
+                    });
+                }
+
+                // Then, process text and find images
+                let currentIndex = 0;
+                for (const codeMatch of codeMatches) {
+                    // Process text before code block
+                    if (codeMatch.start > currentIndex) {
+                        const textSegment = text.slice(currentIndex, codeMatch.start);
+                        parseTextWithImages(textSegment, parts);
+                    }
+                    // Add code block
+                    parts.push(codeMatch);
+                    currentIndex = codeMatch.end;
+                }
+
+                // Process remaining text
+                if (currentIndex < text.length) {
+                    const textSegment = text.slice(currentIndex);
+                    parseTextWithImages(textSegment, parts);
+                }
+
+                return parts.length > 0 ? parts : [{ type: 'text', content: text }];
+            };
+
+            const parseTextWithImages = (text, parts) => {
+                const imageUrlRegex = /(https?:\/\/[^\s]+\.(?:jpg|jpeg|png|gif|webp|svg))/gi;
+                let lastIndex = 0;
+                let match;
+
+                while ((match = imageUrlRegex.exec(text)) !== null) {
+                    // Add text before image
+                    if (match.index > lastIndex) {
+                        parts.push({
+                            type: 'text',
+                            content: text.slice(lastIndex, match.index)
+                        });
+                    }
+                    // Add image
+                    parts.push({
+                        type: 'image',
+                        url: match[0]
+                    });
+                    lastIndex = match.index + match[0].length;
+                }
+
+                // Add remaining text
+                if (lastIndex < text.length) {
+                    parts.push({
+                        type: 'text',
+                        content: text.slice(lastIndex)
+                    });
+                }
+            };
+
+            const handleCopy = async () => {
+                try {
+                    await navigator.clipboard.writeText(content);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 2000);
+                } catch (err) {
+                    console.error('Failed to copy:', err);
+                }
+            };
+
+            const formatTime = (ts) => {
+                if (!ts) return '';
+                const date = new Date(ts);
+                return date.toLocaleTimeString('en-AU', { hour: '2-digit', minute: '2-digit' });
+            };
+
+            if (role === 'system') {
+                // Don't show system messages at all - they're just noise
+                return null;
+            }
+
+            const isUser = role === 'user';
+            const contentParts = parseContent(content);
+
+            if (isEditing) {
+                return (
+                    <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4 animate-slide-up`}>
+                        <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} gap-2 w-full max-w-[85%]`}>
+                            <textarea
+                                value={editedContent}
+                                onChange={(e) => onEditedContentChange(e.target.value)}
+                                className={`w-full px-4 py-3 rounded-xl ${isDarkMode ? 'bg-slate-900/50 border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-900'} border focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none`}
+                                rows={4}
+                                autoFocus
+                            />
+                            <div className="flex gap-2">
+                                <button
+                                    onClick={() => onSaveEdit(messageId)}
+                                    className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg text-sm font-semibold transition-all"
+                                >
+                                    ✓ Save & Resend
+                                </button>
+                                <button
+                                    onClick={onCancelEdit}
+                                    className={`px-4 py-2 ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-200 hover:bg-slate-300'} ${isDarkMode ? 'text-white' : 'text-slate-900'} rounded-lg text-sm transition-all`}
+                                >
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                );
+            }
+
+            return (
+                <div className={`flex ${isUser ? 'justify-end' : 'justify-start'} mb-4 animate-slide-up group`}>
+                    <div className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} gap-1`}>
+                        <div
+                            className={`max-w-[85%] px-4 py-3 rounded-2xl shadow-lg relative ${
+                                isUser
+                                    ? 'bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-br-md'
+                                    : `${isDarkMode ? 'glass text-slate-100' : 'bg-white text-slate-900 border border-slate-200'} rounded-bl-md`
+                            } ${isStreaming ? 'glow-animation' : ''}`}
+                        >
+                            <div className="leading-relaxed">
+                                {contentParts.map((part, idx) => {
+                                    if (part.type === 'code') {
+                                        return (
+                                            <CodeBlock
+                                                key={idx}
+                                                code={part.content}
+                                                language={part.language}
+                                                isDarkMode={isDarkMode}
+                                            />
+                                        );
+                                    } else if (part.type === 'image') {
+                                        return (
+                                            <div key={idx} className="my-3">
+                                                <img
+                                                    src={part.url}
+                                                    alt="Embedded image"
+                                                    className="max-w-full rounded-lg shadow-lg"
+                                                    loading="lazy"
+                                                    onError={(e) => {
+                                                        e.target.style.display = 'none';
+                                                        e.target.nextSibling.style.display = 'block';
+                                                    }}
+                                                />
+                                                <div style={{ display: 'none' }} className={`text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                                                    [Image failed to load: {part.url}]
+                                                </div>
+                                            </div>
+                                        );
+                                    } else {
+                                        return (
+                                            <div key={idx} className="whitespace-pre-wrap">
+                                                {part.content}
+                                            </div>
+                                        );
+                                    }
+                                })}
+                            </div>
+                            {!isStreaming && (
+                                <div className="absolute -top-2 -right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                                    <button
+                                        onClick={handleCopy}
+                                        title="Copy message"
+                                        className={`w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-lg ${
+                                            copied
+                                                ? 'bg-green-500 text-white'
+                                                : `${isDarkMode ? 'bg-slate-700 hover:bg-slate-600 text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'}`
+                                        }`}
+                                    >
+                                        {copied ? '✓' : '📋'}
+                                    </button>
+                                    {isUser && onEdit && (
+                                        <button
+                                            onClick={() => onEdit(messageId, content)}
+                                            title="Edit message"
+                                            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-lg ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600 text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'}`}
+                                        >
+                                            ✏️
+                                        </button>
+                                    )}
+                                    {!isUser && onRegenerate && (
+                                        <button
+                                            onClick={() => onRegenerate(messageId)}
+                                            title="Regenerate response"
+                                            className={`w-8 h-8 rounded-full flex items-center justify-center text-sm shadow-lg ${isDarkMode ? 'bg-slate-700 hover:bg-slate-600 text-white' : 'bg-slate-200 hover:bg-slate-300 text-slate-700'}`}
+                                        >
+                                            🔄
+                                        </button>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                        {timestamp && !isStreaming && (
+                            <div className={`text-xs ${isDarkMode ? 'text-slate-500' : 'text-slate-400'} px-2`}>
+                                {formatTime(timestamp)}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+        
+        // ============================================
+        // MAIN APP COMPONENT
+        // ============================================
+        
+        function FishChatApp() {
+            const [unlocked, setUnlocked] = useState(false);
+            const [profile, setProfile] = useState(null);
+            const [apiKey, setApiKey] = useState('');
+            const [messages, setMessages] = useState([]);
+            const [input, setInput] = useState('');
+            const [loading, setLoading] = useState(false);
+            const [status, setStatus] = useState('offline');
+            const [model, setModel] = useState(localStorage.getItem('fish_model') || 'claude-sonnet-4-20250514');
+            const [listening, setListening] = useState(false);
+            const [connectionStatus, setConnectionStatus] = useState('disconnected'); // disconnected, connected, reconnecting
+            const [totalTokens, setTotalTokens] = useState(0);
+            const [lastResponseCost, setLastResponseCost] = useState(null);
+            const [isDarkMode, setIsDarkMode] = useState(localStorage.getItem('fish_theme') !== 'light');
+            const [currentSessionId, setCurrentSessionId] = useState(localStorage.getItem('fish_current_session') || 'default');
+            const [sessions, setSessions] = useState({});
+            const [showSessionMenu, setShowSessionMenu] = useState(false);
+            const [lastBackupCount, setLastBackupCount] = useState(0);
+            const [backupStatus, setBackupStatus] = useState(''); // 'backing-up', 'backed-up', ''
+            const [ttsEnabled, setTtsEnabled] = useState(localStorage.getItem('fish_tts') === 'true');
+            const [isSpeaking, setIsSpeaking] = useState(false);
+            const [editingMessageId, setEditingMessageId] = useState(null);
+            const [editedContent, setEditedContent] = useState('');
+            const [calculationResult, setCalculationResult] = useState(null);
+            const [sessionSearch, setSessionSearch] = useState('');
+
+            const messagesEndRef = useRef(null);
+            const recognitionRef = useRef(null);
+            const streamingIdRef = useRef(null);
+            const abortControllerRef = useRef(null);
+            
+            // Initialize
+            useEffect(() => {
+                const checkUnlock = async () => {
+                    const savedHash = localStorage.getItem('fish_unlock');
+                    const savedProfileKey = localStorage.getItem('fish_profile') || 'meatbrain';
+
+                    // Check if saved hash matches any profile
+                    for (const [key, profileData] of Object.entries(PROFILES)) {
+                        const profileHash = await hashPassword(key);
+                        if (savedHash === profileHash) {
+                            setUnlocked(true);
+                            const userProfile = { ...profileData, key };
+                            setProfile(userProfile);
+
+                            // Set profile-specific model defaults if no saved model
+                            const savedModel = localStorage.getItem('fish_model');
+                            if (!savedModel) {
+                                let defaultModel = 'claude-sonnet-4-20250514';
+                                if (key === 'meatbrain') {
+                                    defaultModel = 'claude-opus-4-20250514';
+                                } else if (key === 'accounts' || key === 'vanguy') {
+                                    defaultModel = 'claude-sonnet-4-20250514';
+                                }
+                                setModel(defaultModel);
+                                localStorage.setItem('fish_model', defaultModel);
+                            }
+
+                            const savedKey = localStorage.getItem('fish_api_key');
+                            if (savedKey) {
+                                setApiKey(savedKey);
+                            }
+                            break;
+                        }
+                    }
+                };
+
+                checkUnlock();
+                
+                // Setup speech recognition with error handling
+                if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                    try {
+                        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                        recognitionRef.current = new SpeechRecognition();
+                        recognitionRef.current.continuous = false;
+                        recognitionRef.current.interimResults = false;
+                        recognitionRef.current.lang = 'en-AU'; // Australian English
+
+                        recognitionRef.current.onresult = (event) => {
+                            const transcript = event.results[0][0].transcript;
+                            setInput(prev => prev + (prev ? ' ' : '') + transcript);
+                            setListening(false);
+                        };
+
+                        recognitionRef.current.onerror = (event) => {
+                            console.error('Speech recognition error:', event.error);
+                            setListening(false);
+                            if (event.error === 'not-allowed') {
+                                alert('Microphone access denied. Please allow microphone access in your browser settings.');
+                            } else if (event.error === 'no-speech') {
+                                alert('No speech detected. Try again.');
+                            }
+                        };
+
+                        recognitionRef.current.onend = () => {
+                            setListening(false);
+                        };
+                    } catch (err) {
+                        console.error('Failed to setup speech recognition:', err);
+                    }
+                }
+                
+                document.body.className = isDarkMode ? '' : 'light-mode';
+            }, []);
+            
+            // Boot up when unlocked
+            useEffect(() => {
+                if (unlocked && apiKey) {
+                    bootUp();
+                } else if (unlocked && !apiKey) {
+                    // Prompt for API key
+                    const key = prompt('Enter your Anthropic API key:');
+                    if (key) {
+                        setApiKey(key);
+                        localStorage.setItem('fish_api_key', key);
+                    }
+                }
+            }, [unlocked]);
+            
+            // Load sessions from localStorage
+            useEffect(() => {
+                const savedSessions = localStorage.getItem('fish_sessions');
+                if (savedSessions) {
+                    try {
+                        const parsed = JSON.parse(savedSessions);
+                        setSessions(parsed);
+                        // Load current session messages
+                        if (parsed[currentSessionId]) {
+                            setMessages(parsed[currentSessionId].messages || []);
+                        }
+                    } catch (err) {
+                        console.error('Failed to load sessions:', err);
+                    }
+                }
+            }, []);
+
+            // Save current session to localStorage when messages change
+            useEffect(() => {
+                if (messages.length > 0) {
+                    const updatedSessions = {
+                        ...sessions,
+                        [currentSessionId]: {
+                            id: currentSessionId,
+                            name: sessions[currentSessionId]?.name || `Session ${Object.keys(sessions).length + 1}`,
+                            messages: messages,
+                            lastUpdated: Date.now(),
+                            model: model
+                        }
+                    };
+                    setSessions(updatedSessions);
+                    localStorage.setItem('fish_sessions', JSON.stringify(updatedSessions));
+                    localStorage.setItem('fish_current_session', currentSessionId);
+
+                    // Auto-backup to FishBrain every 10 messages
+                    const messageCount = messages.filter(m => m.role !== 'system').length;
+                    if (messageCount > 0 && messageCount % 10 === 0 && messageCount !== lastBackupCount) {
+                        setLastBackupCount(messageCount);
+                        backupToFishBrain(updatedSessions[currentSessionId]);
+                    }
+                }
+            }, [messages, currentSessionId]);
+
+            // Auto-scroll messages
+            useEffect(() => {
+                messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            }, [messages]);
+
+            // Close session menu when clicking outside
+            useEffect(() => {
+                const handleClickOutside = (e) => {
+                    if (showSessionMenu && !e.target.closest('.relative')) {
+                        setShowSessionMenu(false);
+                    }
+                };
+                document.addEventListener('click', handleClickOutside);
+                return () => document.removeEventListener('click', handleClickOutside);
+            }, [showSessionMenu]);
+
+            useEffect(() => {
+                const total = messages
+                    .filter(m => m.role !== 'system')
+                    .reduce((sum, msg) => sum + estimateTokens(msg.content), 0);
+                setTotalTokens(total);
+            }, [messages]);
+            
+            const bootUp = async () => {
+                setStatus('connecting');
+                setConnectionStatus('reconnecting');
+                
+                try {
+                    const [wake, inbox, live] = await Promise.all([
+                        fetch(`${FISHBRAIN_URL}/api/read/WAKE.txt`, { 
+                            headers: { 'Authorization': `Bearer ${FISHBRAIN_TOKEN}` }
+                        }).then(r => r.json()),
+                        fetch(`${FISHBRAIN_URL}/api/read/INBOX.md`, { 
+                            headers: { 'Authorization': `Bearer ${FISHBRAIN_TOKEN}` }
+                        }).then(r => r.json()),
+                        fetch(`${FISHBRAIN_URL}/api/read/LIVE.txt`, { 
+                            headers: { 'Authorization': `Bearer ${FISHBRAIN_TOKEN}` }
+                        }).then(r => r.json())
+                    ]);
+                    
+                    const modelName = model.includes('opus') ? 'Opus' : 'Sonnet';
+                    const bootMsg = `🐟 Ready`;
+
+                    setMessages([{ role: 'system', content: bootMsg, id: Date.now() }]);
+                    setStatus('ready');
+                    setConnectionStatus('connected');
+                } catch (err) {
+                    setMessages([{ role: 'system', content: `❌ Boot failed: ${err.message}`, id: Date.now() }]);
+                    setStatus('error');
+                    setConnectionStatus('disconnected');
+                }
+            };
+            
+            const sendMessage = async () => {
+                if (!input.trim() || loading) return;
+
+                const userMessage = input.trim();
+                setInput('');
+
+                const userMsg = { role: 'user', content: userMessage, id: Date.now(), timestamp: Date.now() };
+                setMessages(prev => [...prev, userMsg]);
+                setLoading(true);
+
+                const inputTokens = messages
+                    .filter(m => m.role !== 'system')
+                    .reduce((sum, m) => sum + estimateTokens(m.content), 0) + estimateTokens(userMessage);
+
+                // Create streaming message
+                const streamId = Date.now() + 1;
+                streamingIdRef.current = streamId;
+                setMessages(prev => [...prev, { role: 'assistant', content: '▌', id: streamId, timestamp: streamId }]);
+
+                let fullText = '';
+
+                try {
+                    setConnectionStatus('reconnecting');
+
+                    // Create abort controller for cancellation
+                    abortControllerRef.current = new AbortController();
+
+                    const response = await fetch(WORKER_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-API-Key': apiKey,
+                            'X-Model': model,
+                        },
+                        body: JSON.stringify({
+                            messages: messages
+                                .filter(m => m.role !== 'system' && m.id !== streamId)
+                                .concat({ role: 'user', content: userMessage })
+                                .map(m => ({ role: m.role, content: m.content })),
+                            stream: true,
+                        }),
+                        signal: abortControllerRef.current.signal,
+                    });
+                    
+                    if (!response.ok) {
+                        const error = await response.text();
+                        throw new Error(`API error ${response.status}: ${error}`);
+                    }
+                    
+                    setConnectionStatus('connected');
+                    
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let buffer = '';
+                    
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+                        
+                        buffer += decoder.decode(value, { stream: true });
+                        const lines = buffer.split('\n');
+                        buffer = lines.pop() || '';
+                        
+                        for (const line of lines) {
+                            if (line.startsWith('data: ')) {
+                                const data = line.slice(6);
+                                if (data === '[DONE]') continue;
+                                
+                                try {
+                                    const parsed = JSON.parse(data);
+                                    
+                                    if (parsed.type === 'content_block_delta' && 
+                                        parsed.delta?.type === 'text_delta') {
+                                        fullText += parsed.delta.text;
+                                        setMessages(prev => prev.map(m => 
+                                            m.id === streamId 
+                                                ? { ...m, content: fullText + '▌' }
+                                                : m
+                                        ));
+                                    }
+                                    
+                                    if (parsed.type === 'message_stop') {
+                                        setMessages(prev => prev.map(m => 
+                                            m.id === streamId 
+                                                ? { ...m, content: fullText }
+                                                : m
+                                        ));
+                                    }
+                                } catch (e) {
+                                    // Ignore JSON parse errors
+                                }
+                            }
+                        }
+                    }
+                    
+                    setMessages(prev => prev.map(m =>
+                        m.id === streamId
+                            ? { ...m, content: fullText || '(empty response)' }
+                            : m
+                    ));
+
+                    // Speak the response if TTS is enabled
+                    if (fullText) {
+                        speakText(fullText);
+                    }
+
+                    const outputTokens = estimateTokens(fullText);
+                    const cost = calculateCost(inputTokens, outputTokens, model);
+                    setLastResponseCost(cost);
+                    
+                } catch (err) {
+                    if (err.name === 'AbortError') {
+                        setMessages(prev => prev.map(m =>
+                            m.id === streamId
+                                ? { ...m, content: fullText || '⏹️ Generation stopped' }
+                                : m
+                        ));
+                    } else {
+                        setMessages(prev => prev.map(m =>
+                            m.id === streamId
+                                ? { ...m, content: `❌ Error: ${err.message}` }
+                                : m
+                        ));
+                        setStatus('error');
+                        setConnectionStatus('disconnected');
+                    }
+                } finally {
+                    setLoading(false);
+                    streamingIdRef.current = null;
+                    abortControllerRef.current = null;
+                }
+            };
+
+            const stopGeneration = () => {
+                if (abortControllerRef.current) {
+                    abortControllerRef.current.abort();
+                }
+            };
+
+            const speakText = (text) => {
+                if (!ttsEnabled || !window.speechSynthesis) return;
+
+                // Stop any current speech
+                window.speechSynthesis.cancel();
+
+                // Remove markdown code blocks and excessive formatting for TTS
+                let cleanText = text
+                    .replace(/```[\s\S]*?```/g, ' [code block] ')
+                    .replace(/`([^`]+)`/g, '$1')
+                    .replace(/\*\*([^*]+)\*\*/g, '$1')
+                    .replace(/\*([^*]+)\*/g, '$1')
+                    .replace(/https?:\/\/[^\s]+/g, ' link ')
+                    .replace(/\n+/g, '. ')
+                    .trim();
+
+                if (!cleanText) return;
+
+                // Wait for voices to load (Chrome bug)
+                const speakWithVoice = () => {
+                    const utterance = new SpeechSynthesisUtterance(cleanText);
+
+                    // Try to get an Australian voice, fallback to English
+                    const voices = window.speechSynthesis.getVoices();
+                    const australianVoice = voices.find(v => v.lang.includes('en-AU'));
+                    const englishVoice = voices.find(v => v.lang.includes('en-'));
+
+                    if (australianVoice) {
+                        utterance.voice = australianVoice;
+                    } else if (englishVoice) {
+                        utterance.voice = englishVoice;
+                    }
+
+                    utterance.rate = 1.0;
+                    utterance.pitch = 1.0;
+                    utterance.volume = 1.0;
+
+                    utterance.onstart = () => setIsSpeaking(true);
+                    utterance.onend = () => setIsSpeaking(false);
+                    utterance.onerror = (e) => {
+                        console.error('TTS error:', e);
+                        setIsSpeaking(false);
+                    };
+
+                    window.speechSynthesis.speak(utterance);
+                };
+
+                // Chrome requires voices to load first
+                const voices = window.speechSynthesis.getVoices();
+                if (voices.length === 0) {
+                    window.speechSynthesis.onvoiceschanged = () => {
+                        speakWithVoice();
+                        window.speechSynthesis.onvoiceschanged = null;
+                    };
+                } else {
+                    speakWithVoice();
+                }
+            };
+
+            const toggleTTS = () => {
+                const newState = !ttsEnabled;
+                setTtsEnabled(newState);
+                localStorage.setItem('fish_tts', newState.toString());
+
+                if (!newState) {
+                    // Stop speaking if TTS is disabled
+                    window.speechSynthesis.cancel();
+                    setIsSpeaking(false);
+                }
+            };
+
+            const stopSpeaking = () => {
+                window.speechSynthesis.cancel();
+                setIsSpeaking(false);
+            };
+
+            const toggleMic = () => {
+                if (!recognitionRef.current) {
+                    alert('Voice input not supported in this browser. Try Chrome or Edge.');
+                    return;
+                }
+
+                if (listening) {
+                    recognitionRef.current.stop();
+                } else {
+                    try {
+                        recognitionRef.current.start();
+                        setListening(true);
+                    } catch (err) {
+                        console.error('Failed to start recognition:', err);
+                        alert('Could not start voice input. Make sure microphone permissions are granted.');
+                        setListening(false);
+                    }
+                }
+            };
+            
+            const handleLogout = () => {
+                localStorage.removeItem('fish_unlock');
+                setUnlocked(false);
+                setMessages([]);
+                setStatus('offline');
+                setConnectionStatus('disconnected');
+                setTotalTokens(0);
+                setLastResponseCost(null);
+            };
+            
+            const handleChangeApiKey = () => {
+                const key = prompt('Enter new Anthropic API key:', apiKey);
+                if (key !== null && key.trim()) {
+                    setApiKey(key);
+                    localStorage.setItem('fish_api_key', key);
+                }
+            };
+            
+            const handleModelChange = (e) => {
+                const newModel = e.target.value;
+                setModel(newModel);
+                localStorage.setItem('fish_model', newModel);
+            };
+            
+            const handleKeyDown = (e) => {
+                // Ctrl+Enter or Cmd+Enter to send (cross-platform)
+                if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+                // Plain Enter to send (unless Shift is held for newline)
+                else if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            };
+            
+            const handleClearContext = () => {
+                if (confirm('Clear all messages? This will start a fresh conversation.')) {
+                    setMessages([]);
+                    setTotalTokens(0);
+                    setLastResponseCost(null);
+                    const modelName = model.includes('opus') ? 'Opus' : 'Sonnet';
+                    setMessages([{ 
+                        role: 'system', 
+                        content: `🐟 Context cleared - Fresh start with ${modelName}`, 
+                        id: Date.now() 
+                    }]);
+                }
+            };
+            
+            const handleExportChat = async () => {
+                const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+                const exportData = {
+                    exported_at: new Date().toISOString(),
+                    model: model,
+                    total_tokens: totalTokens,
+                    messages: messages.filter(m => m.role !== 'system')
+                };
+                
+                const formattedChat = `# Fish Chat Export - ${timestamp}\n\nModel: ${model}\nTotal Tokens: ${totalTokens}\n\n---\n\n` +
+                    messages
+                        .filter(m => m.role !== 'system')
+                        .map(m => `## ${m.role === 'user' ? 'User' : 'Assistant'}\n\n${m.content}\n\n`)
+                        .join('---\n\n');
+                
+                try {
+                    // Try to save to FishBrain
+                    await fetch(`${FISHBRAIN_URL}/api/write/exports/chat_${timestamp}.md`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${FISHBRAIN_TOKEN}`,
+                            'Content-Type': 'text/plain'
+                        },
+                        body: formattedChat
+                    });
+                    
+                    alert('Chat exported to FishBrain! 🐟');
+                } catch (err) {
+                    // Fallback to local download
+                    const blob = new Blob([formattedChat], { type: 'text/markdown' });
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `fish-chat-${timestamp}.md`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                    alert('Chat downloaded locally (FishBrain unavailable)');
+                }
+            };
+            
+            const handleToggleTheme = () => {
+                const newMode = !isDarkMode;
+                setIsDarkMode(newMode);
+                localStorage.setItem('fish_theme', newMode ? 'dark' : 'light');
+                document.body.className = newMode ? '' : 'light-mode';
+
+                // Toggle highlight.js theme
+                const darkTheme = document.getElementById('highlight-dark');
+                const lightTheme = document.getElementById('highlight-light');
+                if (darkTheme && lightTheme) {
+                    darkTheme.disabled = !newMode;
+                    lightTheme.disabled = newMode;
+                }
+            };
+
+            const getGreeting = () => {
+                const hour = new Date().getHours();
+                const profileName = profile?.name || 'mate';
+
+                // Profile-specific greetings
+                let greeting = '';
+                if (profile?.key === 'meatbrain') {
+                    greeting = "G'day Andy";
+                } else if (profile?.key === 'accounts') {
+                    greeting = "Morning Sharon";
+                } else if (profile?.key === 'vanguy') {
+                    greeting = "Hey Ste";
+                } else {
+                    greeting = `Hey ${profileName}`;
+                }
+
+                // Time-aware additions
+                if (hour >= 2 && hour < 5) {
+                    return `${greeting}! Late night? 🌙`;
+                } else if (hour >= 5 && hour < 9) {
+                    return `${greeting}! Morning rush? ☕`;
+                } else if (hour >= 9 && hour < 12) {
+                    return `${greeting}! Let's get it done 💪`;
+                } else if (hour >= 12 && hour < 14) {
+                    return `${greeting}! Lunch sorted? 🍕`;
+                } else if (hour >= 14 && hour < 17) {
+                    return `${greeting}! Afternoon grind 🔥`;
+                } else if (hour >= 17 && hour < 21) {
+                    return `${greeting}! Winding down? 🌅`;
+                } else if (hour >= 21 || hour < 2) {
+                    return `${greeting}! Night owl mode 🦉`;
+                }
+
+                return `${greeting}! 🐟`;
+            };
+
+            const handleNewSession = () => {
+                const newId = `session_${Date.now()}`;
+                setCurrentSessionId(newId);
+                setMessages([]);
+                setTotalTokens(0);
+                setLastResponseCost(null);
+                setShowSessionMenu(false);
+            };
+
+            const handleSwitchSession = (sessionId) => {
+                setCurrentSessionId(sessionId);
+                setMessages(sessions[sessionId]?.messages || []);
+                setShowSessionMenu(false);
+            };
+
+            const handleDeleteSession = (sessionId) => {
+                if (Object.keys(sessions).length <= 1) {
+                    alert('Cannot delete the last session');
+                    return;
+                }
+                if (confirm('Delete this session?')) {
+                    const updated = { ...sessions };
+                    delete updated[sessionId];
+                    setSessions(updated);
+                    localStorage.setItem('fish_sessions', JSON.stringify(updated));
+
+                    if (sessionId === currentSessionId) {
+                        const firstSession = Object.keys(updated)[0];
+                        handleSwitchSession(firstSession);
+                    }
+                }
+            };
+
+            const handleRenameSession = (sessionId) => {
+                const newName = prompt('Rename session:', sessions[sessionId]?.name);
+                if (newName && newName.trim()) {
+                    const updated = {
+                        ...sessions,
+                        [sessionId]: {
+                            ...sessions[sessionId],
+                            name: newName.trim()
+                        }
+                    };
+                    setSessions(updated);
+                    localStorage.setItem('fish_sessions', JSON.stringify(updated));
+                }
+            };
+
+            const backupToFishBrain = async (session) => {
+                try {
+                    setBackupStatus('backing-up');
+
+                    const timestamp = new Date().toISOString().replace(/[:.]/g, '-').slice(0, -5);
+                    const sessionName = session.name.replace(/[^a-zA-Z0-9]/g, '_');
+                    const filename = `/CHATS/${timestamp}_${sessionName}.json`;
+
+                    const backupData = {
+                        session_id: session.id,
+                        session_name: session.name,
+                        created: session.lastUpdated,
+                        backed_up: Date.now(),
+                        model: session.model,
+                        message_count: session.messages?.length || 0,
+                        messages: session.messages || []
+                    };
+
+                    const response = await fetch(`${FISHBRAIN_URL}/api/write`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${FISHBRAIN_TOKEN}`,
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            p: filename,
+                            c: JSON.stringify(backupData, null, 2)
+                        })
+                    });
+
+                    if (response.ok) {
+                        setBackupStatus('backed-up');
+                        setTimeout(() => setBackupStatus(''), 3000);
+                        console.log('✓ Backed up to FishBrain:', filename);
+                    } else {
+                        throw new Error('Backup failed');
+                    }
+                } catch (err) {
+                    console.error('Backup to FishBrain failed:', err);
+                    setBackupStatus('');
+                }
+            };
+            
+            const handleEditMessage = (messageId, content) => {
+                setEditingMessageId(messageId);
+                setEditedContent(content);
+            };
+
+            const handleCancelEdit = () => {
+                setEditingMessageId(null);
+                setEditedContent('');
+            };
+
+            const handleSaveEdit = async (messageId) => {
+                if (!editedContent.trim()) return;
+
+                // Find the message index
+                const messageIndex = messages.findIndex(m => m.id === messageId);
+                if (messageIndex === -1) return;
+
+                // Remove all messages after this one (we'll regenerate)
+                const newMessages = messages.slice(0, messageIndex);
+
+                // Add the edited message
+                const editedMessage = {
+                    ...messages[messageIndex],
+                    content: editedContent.trim()
+                };
+                newMessages.push(editedMessage);
+
+                // Update messages
+                setMessages(newMessages);
+                setEditingMessageId(null);
+                setEditedContent('');
+
+                // If it was a user message, trigger a new response
+                if (editedMessage.role === 'user') {
+                    setInput('');
+                    // Simulate sending the edited message
+                    setTimeout(() => {
+                        sendMessageWithContent(editedContent.trim(), newMessages);
+                    }, 100);
+                }
+            };
+
+            const handleRegenerateResponse = (messageId) => {
+                // Find the user message before this assistant message
+                const messageIndex = messages.findIndex(m => m.id === messageId);
+                if (messageIndex <= 0) return;
+
+                const userMessage = messages[messageIndex - 1];
+                if (userMessage.role !== 'user') return;
+
+                // Remove this and all subsequent messages
+                const newMessages = messages.slice(0, messageIndex);
+                setMessages(newMessages);
+
+                // Trigger regeneration
+                setTimeout(() => {
+                    sendMessageWithContent(userMessage.content, newMessages);
+                }, 100);
+            };
+
+            const sendMessageWithContent = async (content, previousMessages) => {
+                if (!content.trim() || loading) return;
+
+                setLoading(true);
+
+                const inputTokens = previousMessages
+                    .filter(m => m.role !== 'system')
+                    .reduce((sum, m) => sum + estimateTokens(m.content), 0) + estimateTokens(content);
+
+                // Create streaming message
+                const streamId = Date.now() + 1;
+                streamingIdRef.current = streamId;
+                setMessages(prev => [...prev, { role: 'assistant', content: '▌', id: streamId, timestamp: streamId }]);
+
+                let fullText = '';
+
+                try {
+                    setConnectionStatus('reconnecting');
+                    abortControllerRef.current = new AbortController();
+
+                    const response = await fetch(WORKER_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-API-Key': apiKey,
+                            'X-Model': model,
+                        },
+                        body: JSON.stringify({
+                            messages: previousMessages
+                                .filter(m => m.role !== 'system' && m.id !== streamId)
+                                .concat({ role: 'user', content: content })
+                                .map(m => ({ role: m.role, content: m.content })),
+                            stream: true,
+                        }),
+                        signal: abortControllerRef.current.signal,
+                    });
+
+                    if (!response.ok) {
+                        const error = await response.text();
+                        throw new Error(`API error ${response.status}: ${error}`);
+                    }
+
+                    setConnectionStatus('connected');
+
+                    const reader = response.body.getReader();
+                    const decoder = new TextDecoder();
+                    let buffer = '';
+
+                    while (true) {
+                        const { done, value } = await reader.read();
+                        if (done) break;
+
+                        buffer += decoder.decode(value, { stream: true });
+                        const lines = buffer.split('\n');
+                        buffer = lines.pop() || '';
+
+                        for (const line of lines) {
+                            if (line.startsWith('data: ')) {
+                                const data = line.slice(6);
+                                if (data === '[DONE]') continue;
+
+                                try {
+                                    const parsed = JSON.parse(data);
+
+                                    if (parsed.type === 'content_block_delta' &&
+                                        parsed.delta?.type === 'text_delta') {
+                                        fullText += parsed.delta.text;
+                                        setMessages(prev => prev.map(m =>
+                                            m.id === streamId
+                                                ? { ...m, content: fullText + '▌' }
+                                                : m
+                                        ));
+                                    }
+
+                                    if (parsed.type === 'message_stop') {
+                                        setMessages(prev => prev.map(m =>
+                                            m.id === streamId
+                                                ? { ...m, content: fullText }
+                                                : m
+                                        ));
+                                    }
+                                } catch (e) {
+                                    // Ignore JSON parse errors
+                                }
+                            }
+                        }
+                    }
+
+                    setMessages(prev => prev.map(m =>
+                        m.id === streamId
+                            ? { ...m, content: fullText || '(empty response)' }
+                            : m
+                    ));
+
+                    if (fullText) {
+                        speakText(fullText);
+                    }
+
+                    const outputTokens = estimateTokens(fullText);
+                    const cost = calculateCost(inputTokens, outputTokens, model);
+                    setLastResponseCost(cost);
+
+                } catch (err) {
+                    if (err.name === 'AbortError') {
+                        setMessages(prev => prev.map(m =>
+                            m.id === streamId
+                                ? { ...m, content: fullText || '⏹️ Generation stopped' }
+                                : m
+                        ));
+                    } else {
+                        setMessages(prev => prev.map(m =>
+                            m.id === streamId
+                                ? { ...m, content: `❌ Error: ${err.message}` }
+                                : m
+                        ));
+                        setStatus('error');
+                        setConnectionStatus('disconnected');
+                    }
+                } finally {
+                    setLoading(false);
+                    streamingIdRef.current = null;
+                    abortControllerRef.current = null;
+                }
+            };
+
+            const detectCalculation = (text) => {
+                // Basic math expression detection
+                const mathRegex = /^[\d\s+\-*/().]+$/;
+                const trimmed = text.trim();
+
+                // Check if it looks like a math expression
+                if (!trimmed || trimmed.length > 100 || !mathRegex.test(trimmed)) {
+                    setCalculationResult(null);
+                    return;
+                }
+
+                try {
+                    // Safe eval using Function constructor (only for simple math)
+                    const result = Function('"use strict"; return (' + trimmed + ')')();
+
+                    if (typeof result === 'number' && isFinite(result)) {
+                        setCalculationResult(result);
+                    } else {
+                        setCalculationResult(null);
+                    }
+                } catch (e) {
+                    setCalculationResult(null);
+                }
+            };
+
+            const handleInputChange = (value) => {
+                setInput(value);
+                detectCalculation(value);
+            };
+
+            const handleUnlock = (userProfile) => {
+                setUnlocked(true);
+                setProfile(userProfile);
+
+                // Set profile-specific model defaults
+                const savedModel = localStorage.getItem('fish_model');
+                if (!savedModel) {
+                    let defaultModel = 'claude-sonnet-4-20250514'; // Default to Sonnet
+                    if (userProfile.key === 'meatbrain') {
+                        defaultModel = 'claude-opus-4-20250514'; // Andy gets Opus
+                    } else if (userProfile.key === 'accounts' || userProfile.key === 'vanguy') {
+                        defaultModel = 'claude-sonnet-4-20250514'; // Sharon & Steve get Sonnet
+                    }
+                    setModel(defaultModel);
+                    localStorage.setItem('fish_model', defaultModel);
+                }
+
+                // Auto-enable TTS for Steve's profile
+                if (userProfile.key === 'vanguy' && !localStorage.getItem('fish_tts')) {
+                    setTtsEnabled(true);
+                    localStorage.setItem('fish_tts', 'true');
+                }
+            };
+
+            if (!unlocked) {
+                return <LockScreen onUnlock={handleUnlock} />;
+            }
+            
+            const statusColors = {
+                ready: 'bg-green-500',
+                connecting: 'bg-yellow-500',
+                offline: 'bg-slate-500',
+                error: 'bg-red-500'
+            };
+            
+            const statusLabels = {
+                ready: model.includes('opus') ? '🧠 Opus' : '⚡ Sonnet',
+                connecting: 'Booting...',
+                offline: 'Offline',
+                error: 'Error'
+            };
+            
+            const connectionColors = {
+                connected: 'bg-green-500',
+                reconnecting: 'bg-yellow-500',
+                disconnected: 'bg-red-500'
+            };
+            
+            const connectionLabels = {
+                connected: 'Connected',
+                reconnecting: 'Reconnecting...',
+                disconnected: 'Disconnected'
+            };
+            
+            return (
+                <div className={`h-full flex flex-col ${isDarkMode ? 'bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900' : 'bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100'}`}>
+                    {/* Background effects */}
+                    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+                        <div className={`absolute top-0 left-1/4 w-96 h-96 ${isDarkMode ? 'bg-blue-500/5' : 'bg-blue-500/10'} rounded-full blur-3xl`}></div>
+                        <div className={`absolute bottom-0 right-1/4 w-96 h-96 ${isDarkMode ? 'bg-cyan-500/5' : 'bg-cyan-500/10'} rounded-full blur-3xl`}></div>
+                    </div>
+                    
+                    {/* Header */}
+                    <div className={`${isDarkMode ? 'glass-strong' : 'bg-white/80 backdrop-blur-lg border-slate-200'} p-4 border-b ${isDarkMode ? 'border-slate-700/50' : ''} shadow-lg relative z-10`}>
+                        <div className="flex items-center justify-between gap-4 flex-wrap">
+                            <h1 className={`text-xl font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'} flex items-center gap-2`}>
+                                <span className="text-2xl">{profile?.emoji || '🐟'}</span>
+                                <span>Fish Chat</span>
+                                {profile && (
+                                    <span className={`text-sm font-normal ${isDarkMode ? 'text-slate-400' : 'text-slate-600'}`}>
+                                        - {getGreeting()}
+                                    </span>
+                                )}
+                            </h1>
+                            
+                            <div className="flex items-center gap-2 flex-wrap">
+                                {/* Session dropdown */}
+                                <div className="relative">
+                                    <button
+                                        onClick={() => setShowSessionMenu(!showSessionMenu)}
+                                        className={`px-3 py-2 ${isDarkMode ? 'bg-slate-800/80 border-slate-600 text-white' : 'bg-white border-slate-300 text-slate-900'} border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer flex items-center gap-2`}
+                                        title="Session management"
+                                    >
+                                        💬 {sessions[currentSessionId]?.name || 'Session'} ▾
+                                    </button>
+                                    {showSessionMenu && (
+                                        <div className={`absolute top-full left-0 mt-2 w-64 ${isDarkMode ? 'glass-strong' : 'bg-white border-slate-200'} border rounded-lg shadow-xl z-50 max-h-96 overflow-y-auto`}>
+                                            <div className="p-2">
+                                                {/* Search box */}
+                                                <input
+                                                    type="text"
+                                                    value={sessionSearch}
+                                                    onChange={(e) => setSessionSearch(e.target.value)}
+                                                    placeholder="🔍 Search sessions..."
+                                                    className={`w-full px-3 py-2 mb-2 ${isDarkMode ? 'bg-slate-900/50 border-slate-700 text-white placeholder-slate-500' : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'} border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500`}
+                                                    onClick={(e) => e.stopPropagation()}
+                                                />
+
+                                                <button
+                                                    onClick={handleNewSession}
+                                                    className={`w-full px-3 py-2 ${isDarkMode ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-500 hover:bg-blue-600'} text-white rounded-lg text-sm font-semibold transition-all mb-2`}
+                                                >
+                                                    + New Session
+                                                </button>
+                                                <div className={`border-t ${isDarkMode ? 'border-slate-700' : 'border-slate-200'} my-2`}></div>
+                                                {Object.values(sessions)
+                                                    .filter(session => {
+                                                        const searchLower = sessionSearch.toLowerCase();
+                                                        if (!searchLower) return true;
+
+                                                        // Search in session name
+                                                        if (session.name.toLowerCase().includes(searchLower)) return true;
+
+                                                        // Search in message content
+                                                        return session.messages?.some(msg =>
+                                                            msg.content.toLowerCase().includes(searchLower)
+                                                        );
+                                                    })
+                                                    .sort((a, b) => b.lastUpdated - a.lastUpdated)
+                                                    .map(session => (
+                                                    <div
+                                                        key={session.id}
+                                                        className={`group flex items-center gap-2 px-3 py-2 rounded-lg mb-1 ${
+                                                            session.id === currentSessionId
+                                                                ? `${isDarkMode ? 'bg-blue-900/50' : 'bg-blue-100'}`
+                                                                : `${isDarkMode ? 'hover:bg-slate-800' : 'hover:bg-slate-100'}`
+                                                        } transition-all cursor-pointer`}
+                                                    >
+                                                        <div
+                                                            onClick={() => handleSwitchSession(session.id)}
+                                                            className="flex-1 min-w-0"
+                                                        >
+                                                            <div className={`text-sm font-medium ${isDarkMode ? 'text-white' : 'text-slate-900'} truncate`}>
+                                                                {session.name}
+                                                            </div>
+                                                            <div className={`text-xs ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                                                                {session.messages?.length || 0} messages
+                                                            </div>
+                                                        </div>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleRenameSession(session.id); }}
+                                                            className={`opacity-0 group-hover:opacity-100 p-1 ${isDarkMode ? 'hover:bg-slate-700' : 'hover:bg-slate-200'} rounded transition-all`}
+                                                            title="Rename"
+                                                        >
+                                                            ✏️
+                                                        </button>
+                                                        <button
+                                                            onClick={(e) => { e.stopPropagation(); handleDeleteSession(session.id); }}
+                                                            className={`opacity-0 group-hover:opacity-100 p-1 ${isDarkMode ? 'hover:bg-red-900/50' : 'hover:bg-red-100'} rounded transition-all`}
+                                                            title="Delete"
+                                                        >
+                                                            🗑️
+                                                        </button>
+                                                    </div>
+                                                ))}
+                                                {sessionSearch && Object.values(sessions).filter(session => {
+                                                    const searchLower = sessionSearch.toLowerCase();
+                                                    if (session.name.toLowerCase().includes(searchLower)) return true;
+                                                    return session.messages?.some(msg =>
+                                                        msg.content.toLowerCase().includes(searchLower)
+                                                    );
+                                                }).length === 0 && (
+                                                    <div className={`text-center py-4 text-sm ${isDarkMode ? 'text-slate-400' : 'text-slate-500'}`}>
+                                                        No sessions found
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div className={`px-3 py-1.5 rounded-full text-xs font-semibold text-white flex items-center gap-2 ${connectionColors[connectionStatus]}`}>
+                                    <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                                    {connectionLabels[connectionStatus]}
+                                </div>
+
+                                {backupStatus && (
+                                    <div className={`px-3 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2 ${
+                                        backupStatus === 'backing-up'
+                                            ? 'bg-yellow-500 text-yellow-900'
+                                            : 'bg-green-500 text-white'
+                                    }`}>
+                                        {backupStatus === 'backing-up' ? '💾 Backing up...' : '✓ Backed up'}
+                                    </div>
+                                )}
+
+                                <div className={`px-3 py-1.5 rounded-lg text-xs font-mono ${isDarkMode ? 'bg-slate-800/80 text-slate-300' : 'bg-slate-100 text-slate-700'} border ${isDarkMode ? 'border-slate-600' : 'border-slate-300'}`}>
+                                    {totalTokens.toLocaleString()} tokens
+                                </div>
+                                
+                                {lastResponseCost !== null && (
+                                    <div className={`px-3 py-1.5 rounded-lg text-xs font-mono ${isDarkMode ? 'bg-green-900/30 text-green-300' : 'bg-green-100 text-green-700'} border ${isDarkMode ? 'border-green-700' : 'border-green-300'}`}>
+                                        ${lastResponseCost}
+                                    </div>
+                                )}
+                                
+                                <select
+                                    value={model}
+                                    onChange={handleModelChange}
+                                    className={`px-3 py-2 ${isDarkMode ? 'bg-slate-800/80 border-slate-600 text-white' : 'bg-white border-slate-300 text-slate-900'} border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all cursor-pointer`}
+                                >
+                                    <option value="claude-opus-4-20250514">🧠 Opus</option>
+                                    <option value="claude-sonnet-4-20250514">⚡ Sonnet</option>
+                                    <option value="grok-2-latest">🤖 Grok</option>
+                                    <option value="gpt-4o">🔮 GPT-4o</option>
+                                    <option value="gemini-2.0-flash-exp">💎 Gemini</option>
+                                </select>
+                                
+                                <div className={`px-3 py-1.5 rounded-full text-xs font-semibold text-white flex items-center gap-2 ${statusColors[status]}`}>
+                                    <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                                    {statusLabels[status]}
+                                </div>
+                                
+                                {window.speechSynthesis && (
+                                    <button
+                                        onClick={isSpeaking ? stopSpeaking : toggleTTS}
+                                        className={`p-2 rounded-lg transition-all ${
+                                            isSpeaking
+                                                ? 'bg-red-500 hover:bg-red-600 animate-pulse-slow'
+                                                : ttsEnabled
+                                                    ? 'bg-blue-500 hover:bg-blue-600'
+                                                    : `${isDarkMode ? 'glass' : 'bg-slate-100 border border-slate-300'} hover:bg-slate-700/50`
+                                        }`}
+                                        title={isSpeaking ? 'Stop speaking' : ttsEnabled ? 'TTS enabled - Click to disable' : 'Enable text-to-speech'}
+                                    >
+                                        <span className="text-lg">{isSpeaking ? '🔇' : '🔊'}</span>
+                                    </button>
+                                )}
+
+                                <button
+                                    onClick={handleToggleTheme}
+                                    className={`p-2 ${isDarkMode ? 'glass' : 'bg-slate-100 border border-slate-300'} rounded-lg hover:bg-slate-700/50 transition-all`}
+                                    title={isDarkMode ? 'Light Mode' : 'Dark Mode'}
+                                >
+                                    <span className="text-lg">{isDarkMode ? '☀️' : '🌙'}</span>
+                                </button>
+                                
+                                <button
+                                    onClick={handleClearContext}
+                                    className={`p-2 ${isDarkMode ? 'glass' : 'bg-slate-100 border border-slate-300'} rounded-lg hover:bg-slate-700/50 transition-all`}
+                                    title="Clear Context"
+                                >
+                                    <span className="text-lg">🗑️</span>
+                                </button>
+                                
+                                <button
+                                    onClick={handleExportChat}
+                                    disabled={messages.filter(m => m.role !== 'system').length === 0}
+                                    className={`p-2 ${isDarkMode ? 'glass' : 'bg-slate-100 border border-slate-300'} rounded-lg hover:bg-slate-700/50 transition-all disabled:opacity-50 disabled:cursor-not-allowed`}
+                                    title="Export Chat"
+                                >
+                                    <span className="text-lg">📥</span>
+                                </button>
+                                
+                                <button
+                                    onClick={handleChangeApiKey}
+                                    className={`p-2 ${isDarkMode ? 'glass' : 'bg-slate-100 border border-slate-300'} rounded-lg hover:bg-slate-700/50 transition-all`}
+                                    title="Change API Key"
+                                >
+                                    <span className="text-lg">🔑</span>
+                                </button>
+                                
+                                <button
+                                    onClick={handleLogout}
+                                    className={`p-2 ${isDarkMode ? 'glass' : 'bg-slate-100 border border-slate-300'} rounded-lg hover:bg-slate-700/50 transition-all`}
+                                    title="Lock"
+                                >
+                                    <span className="text-lg">🔒</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    {/* Messages */}
+                    <div className="flex-1 overflow-y-auto p-4 relative z-10">
+                        <div className="max-w-4xl mx-auto">
+                            {messages.map(msg => (
+                                <Message
+                                    key={msg.id}
+                                    messageId={msg.id}
+                                    role={msg.role}
+                                    content={msg.content}
+                                    isStreaming={msg.id === streamingIdRef.current}
+                                    isDarkMode={isDarkMode}
+                                    timestamp={msg.timestamp}
+                                    isEditing={editingMessageId === msg.id}
+                                    onEdit={handleEditMessage}
+                                    onSaveEdit={handleSaveEdit}
+                                    onCancelEdit={handleCancelEdit}
+                                    editedContent={editedContent}
+                                    onEditedContentChange={setEditedContent}
+                                    onRegenerate={handleRegenerateResponse}
+                                />
+                            ))}
+                            <div ref={messagesEndRef} />
+                        </div>
+                    </div>
+                    
+                    {/* Input area */}
+                    <div className={`${isDarkMode ? 'glass-strong' : 'bg-white/80 backdrop-blur-lg border-slate-200'} p-4 border-t ${isDarkMode ? 'border-slate-700/50' : ''} shadow-lg relative z-10`}>
+                        <div className="max-w-4xl mx-auto">
+                            {/* Quick actions - profile-specific */}
+                            {profile?.key === 'meatbrain' && (
+                            <div className="flex flex-wrap gap-2 mb-3">
+                                <button
+                                    onClick={() => setInput('Take this to the brains trust and get opinions from all models')}
+                                    className={`px-3 py-1.5 text-xs rounded-lg ${isDarkMode ? 'bg-purple-900/50 hover:bg-purple-800/60 text-purple-200 border border-purple-700' : 'bg-purple-100 hover:bg-purple-200 text-purple-800 border border-purple-300'} transition-all`}
+                                    title="Ask Brains Trust"
+                                >
+                                    🧠 Brains Trust
+                                </button>
+                                <button
+                                    onClick={() => setInput('Save a breadcrumb of where we\'re at')}
+                                    className={`px-3 py-1.5 text-xs rounded-lg ${isDarkMode ? 'bg-amber-900/50 hover:bg-amber-800/60 text-amber-200 border border-amber-700' : 'bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300'} transition-all`}
+                                    title="Save breadcrumb"
+                                >
+                                    🍞 Breadcrumb
+                                </button>
+                                <button
+                                    onClick={() => setInput('Valhalla hunt this topic')}
+                                    className={`px-3 py-1.5 text-xs rounded-lg ${isDarkMode ? 'bg-red-900/50 hover:bg-red-800/60 text-red-200 border border-red-700' : 'bg-red-100 hover:bg-red-200 text-red-800 border border-red-300'} transition-all`}
+                                    title="Valhalla research"
+                                >
+                                    ⚔️ Valhalla
+                                </button>
+                                <button
+                                    onClick={() => setInput('Quick memento snapshot')}
+                                    className={`px-3 py-1.5 text-xs rounded-lg ${isDarkMode ? 'bg-blue-900/50 hover:bg-blue-800/60 text-blue-200 border border-blue-700' : 'bg-blue-100 hover:bg-blue-200 text-blue-800 border border-blue-300'} transition-all`}
+                                    title="Create memento"
+                                >
+                                    📸 Memento
+                                </button>
+                            </div>
+                            )}
+
+                            {/* Sharon's quick actions */}
+                            {profile?.key === 'accounts' && (
+                            <div className="flex flex-wrap gap-2 mb-3">
+                                <button
+                                    onClick={() => setInput('Show me outstanding invoices')}
+                                    className={`px-3 py-1.5 text-xs rounded-lg ${isDarkMode ? 'bg-green-900/50 hover:bg-green-800/60 text-green-200 border border-green-700' : 'bg-green-100 hover:bg-green-200 text-green-800 border border-green-300'} transition-all`}
+                                    title="Outstanding invoices"
+                                >
+                                    💰 Invoices
+                                </button>
+                                <button
+                                    onClick={() => setInput('Generate a quote for')}
+                                    className={`px-3 py-1.5 text-xs rounded-lg ${isDarkMode ? 'bg-blue-900/50 hover:bg-blue-800/60 text-blue-200 border border-blue-700' : 'bg-blue-100 hover:bg-blue-200 text-blue-800 border border-blue-300'} transition-all`}
+                                    title="Create quote"
+                                >
+                                    📄 Quote
+                                </button>
+                                <button
+                                    onClick={() => setInput('Today\'s revenue summary')}
+                                    className={`px-3 py-1.5 text-xs rounded-lg ${isDarkMode ? 'bg-amber-900/50 hover:bg-amber-800/60 text-amber-200 border border-amber-700' : 'bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300'} transition-all`}
+                                    title="Revenue today"
+                                >
+                                    📊 Revenue
+                                </button>
+                                <button
+                                    onClick={() => setInput('Who hasn\'t paid yet?')}
+                                    className={`px-3 py-1.5 text-xs rounded-lg ${isDarkMode ? 'bg-red-900/50 hover:bg-red-800/60 text-red-200 border border-red-700' : 'bg-red-100 hover:bg-red-200 text-red-800 border border-red-300'} transition-all`}
+                                    title="Unpaid clients"
+                                >
+                                    ⚠️ Unpaid
+                                </button>
+                            </div>
+                            )}
+
+                            {/* Steve's quick actions */}
+                            {profile?.key === 'vanguy' && (
+                            <div className="flex flex-wrap gap-2 mb-3">
+                                <button
+                                    onClick={() => setInput('What jobs do I have today?')}
+                                    className={`px-3 py-1.5 text-xs rounded-lg ${isDarkMode ? 'bg-blue-900/50 hover:bg-blue-800/60 text-blue-200 border border-blue-700' : 'bg-blue-100 hover:bg-blue-200 text-blue-800 border border-blue-300'} transition-all`}
+                                    title="Today's jobs"
+                                >
+                                    📋 Today's Jobs
+                                </button>
+                                <button
+                                    onClick={() => setInput('What\'s my next job and where is it?')}
+                                    className={`px-3 py-1.5 text-xs rounded-lg ${isDarkMode ? 'bg-green-900/50 hover:bg-green-800/60 text-green-200 border border-green-700' : 'bg-green-100 hover:bg-green-200 text-green-800 border border-green-300'} transition-all`}
+                                    title="Next job location"
+                                >
+                                    🗺️ Next Job
+                                </button>
+                                <button
+                                    onClick={() => setInput('Best route for today\'s jobs')}
+                                    className={`px-3 py-1.5 text-xs rounded-lg ${isDarkMode ? 'bg-amber-900/50 hover:bg-amber-800/60 text-amber-200 border border-amber-700' : 'bg-amber-100 hover:bg-amber-200 text-amber-800 border border-amber-300'} transition-all`}
+                                    title="Optimize route"
+                                >
+                                    🚚 Route
+                                </button>
+                                <button
+                                    onClick={() => setInput('Any urgent jobs?')}
+                                    className={`px-3 py-1.5 text-xs rounded-lg ${isDarkMode ? 'bg-red-900/50 hover:bg-red-800/60 text-red-200 border border-red-700' : 'bg-red-100 hover:bg-red-200 text-red-800 border border-red-300'} transition-all`}
+                                    title="Urgent jobs"
+                                >
+                                    🚨 Urgent
+                                </button>
+                            </div>
+                            )}
+
+                            {/* Calculation preview */}
+                            {calculationResult !== null && (
+                                <div className={`mb-2 px-4 py-2 rounded-lg ${isDarkMode ? 'bg-green-900/30 border-green-700' : 'bg-green-50 border-green-300'} border flex items-center justify-between`}>
+                                    <span className={`text-sm ${isDarkMode ? 'text-green-300' : 'text-green-800'}`}>
+                                        🧮 Result:
+                                    </span>
+                                    <span className={`font-mono font-bold text-lg ${isDarkMode ? 'text-green-200' : 'text-green-900'}`}>
+                                        {calculationResult.toLocaleString()}
+                                    </span>
+                                </div>
+                            )}
+
+                            <div className="flex items-end gap-3">
+                            {profile?.showVoice && recognitionRef.current && (
+                                <button
+                                    onClick={toggleMic}
+                                    disabled={loading}
+                                    title={listening ? 'Stop listening' : 'Click to speak'}
+                                    className={`${profile?.micSize === 'large' ? 'w-16 h-16 text-3xl' : 'w-12 h-12 text-xl'} rounded-full flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg ${
+                                        listening
+                                            ? 'bg-red-500 hover:bg-red-600 animate-pulse-slow'
+                                            : `${isDarkMode ? 'bg-slate-700 hover:bg-slate-600' : 'bg-slate-200 hover:bg-slate-300'}`
+                                    }`}
+                                >
+                                    🎤
+                                </button>
+                            )}
+
+                            <textarea
+                                value={input}
+                                onChange={(e) => handleInputChange(e.target.value)}
+                                onKeyDown={handleKeyDown}
+                                placeholder="Type or use mic..."
+                                rows={1}
+                                className={`flex-1 px-4 py-3 ${isDarkMode ? 'bg-slate-900/50 border-slate-700 text-white placeholder-slate-500' : 'bg-white border-slate-300 text-slate-900 placeholder-slate-400'} border rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all resize-none`}
+                            />
+                            
+                            {loading ? (
+                                <button
+                                    onClick={stopGeneration}
+                                    className="px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 text-white font-semibold rounded-xl hover:from-red-600 hover:to-red-700 transition-all transform hover:scale-105 active:scale-95 shadow-lg"
+                                    title="Stop generation"
+                                >
+                                    ⏹️ Stop
+                                </button>
+                            ) : (
+                                <button
+                                    onClick={sendMessage}
+                                    disabled={!input.trim()}
+                                    className="px-6 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-semibold rounded-xl hover:from-blue-600 hover:to-blue-700 transition-all transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
+                                >
+                                    Send
+                                </button>
+                            )}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        }
+        
+        // ============================================
+        // RENDER APP
+        // ============================================
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(
+            <ErrorBoundary>
+                <FishChatApp />
+            </ErrorBoundary>
+        );
+    </script>
+</body>
+</html>
