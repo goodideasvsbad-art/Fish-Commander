@@ -1,0 +1,14 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "type": "command",
+        "command": "python3 hooks/hippocampus_hook.py"
+      }
+    ]
+  },
+  "env": {
+    "FISH_HIPPO_URL": "https://fishbrain.meatbag.com.au/api/hippocampus/recall",
+    "FISH_HIPPO_KEY": "REPLACE_WITH_ACTUAL_KEY"
+  }
+}
