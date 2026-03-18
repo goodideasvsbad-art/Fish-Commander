@@ -49,11 +49,6 @@ export function TomCommanderV6() {
     }, 2000)
   }
 
-  const handleTomCommand = (command: string) => {
-    console.log("[v0] Tom command:", command)
-    // In real app, send to Claude API
-  }
-
   const quickCommandsByRole = {
     sharon: [
       { label: "Chase all overdue", command: "Chase all overdue invoices" },
