@@ -3,11 +3,13 @@
     "UserPromptSubmit": [
       {
         "type": "command",
-        "command": "python3 hooks/hippocampus_hook.py"
+        "command": "python3 hooks/hippocampus_hook.py",
+        "timeout": 5000
       },
       {
         "type": "command",
-        "command": "python3 hooks/thalamus_hook.py"
+        "command": "python3 hooks/thalamus_hook.py",
+        "timeout": 10000
       }
     ]
   },
