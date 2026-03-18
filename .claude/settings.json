@@ -8,7 +8,7 @@
     ]
   },
   "env": {
-    "FISH_HIPPO_URL": "https://fishbrain.meatbag.com.au/api/hippocampus/recall",
-    "FISH_HIPPO_KEY": "psWF4prm4cI6SIy8duudpnQiw80jGPX719XvI9p9oaA"
+    "FISHBRAIN_URL": "https://fishbrain.meatbag.com.au",
+    "FISHBRAIN_TOKEN": "fish_d48aa0f949a6153f144cd6f560d08aa03d3e1e8b_2025"
   }
 }
