@@ -6,19 +6,20 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
-import type { TomState, TomMood, LiveCall } from "@/lib/types"
-import Image from "next/image"
+import type { TomState, TomMood, LiveCall, TomOutfit } from "@/lib/types"
+import { TomAvatar } from "./tom-avatar"
 
 interface TomStatusPanelProps {
   state: TomState
   mood: TomMood
+  outfit?: TomOutfit
   liveCall?: LiveCall
   onListenIn?: () => void
   onWhisper?: (message: string) => void
   onTakeOver?: () => void
 }
 
-export function TomStatusPanel({ state, mood, liveCall, onListenIn, onWhisper, onTakeOver }: TomStatusPanelProps) {
+export function TomStatusPanel({ state, mood, outfit, liveCall, onListenIn, onWhisper, onTakeOver }: TomStatusPanelProps) {
   const [whisperText, setWhisperText] = useState("")
   const [muted, setMuted] = useState(false)
   const transcriptEndRef = useRef<HTMLDivElement>(null)
@@ -55,12 +56,10 @@ export function TomStatusPanel({ state, mood, liveCall, onListenIn, onWhisper, o
       <Card className="bg-slate-900 border-slate-800">
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
-            <Image
+            <TomAvatar
               src={tomAvatars[mood] || "/placeholder.svg"}
-              alt="Tom"
-              width={48}
-              height={48}
-              className="rounded-full"
+              size={48}
+              outfit={outfit}
             />
             <div className="flex-1">
               <p className="text-sm font-medium text-white">Tom is ready</p>
@@ -83,14 +82,12 @@ export function TomStatusPanel({ state, mood, liveCall, onListenIn, onWhisper, o
           {/* Call Header */}
           <div className="flex items-start gap-3">
             <div className="relative">
-              <Image
+              <TomAvatar
                 src={tomAvatars["on-call"] || "/placeholder.svg"}
-                alt="Tom on call"
-                width={56}
-                height={56}
-                className="rounded-full"
+                size={56}
+                outfit={outfit}
               />
-              <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-red-600 flex items-center justify-center border-2 border-slate-900">
+              <div className="absolute -bottom-1 -right-1 w-5 h-5 rounded-full bg-red-600 flex items-center justify-center border-2 border-slate-900 z-20">
                 <Phone className="w-3 h-3 text-white" />
               </div>
             </div>
@@ -212,12 +209,10 @@ export function TomStatusPanel({ state, mood, liveCall, onListenIn, onWhisper, o
       <Card className="bg-slate-900 border-green-700">
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
-            <Image
+            <TomAvatar
               src={tomAvatars["thumbs-up"] || "/placeholder.svg"}
-              alt="Tom"
-              width={48}
-              height={48}
-              className="rounded-full"
+              size={48}
+              outfit={outfit}
             />
             <div className="flex-1">
               <p className="text-sm font-medium text-white flex items-center gap-2">
@@ -237,12 +232,10 @@ export function TomStatusPanel({ state, mood, liveCall, onListenIn, onWhisper, o
       <Card className="bg-red-900/20 border-red-800">
         <CardContent className="p-4">
           <div className="flex items-center gap-3">
-            <Image
+            <TomAvatar
               src={tomAvatars["concerned"] || "/placeholder.svg"}
-              alt="Tom"
-              width={48}
-              height={48}
-              className="rounded-full"
+              size={48}
+              outfit={outfit}
             />
             <div className="flex-1">
               <p className="text-sm font-medium text-red-300 flex items-center gap-2">

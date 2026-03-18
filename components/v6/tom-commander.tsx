@@ -12,10 +12,11 @@ import { TomStatusPanel } from "./tom-status-panel"
 import { TomActivityFeed, createTomActivities } from "./tom-activity-feed"
 import { TalkToTomLive } from "./talk-to-tom-live"
 import { WeatherWidget } from "./weather-widget"
-import type { UserRole, TomState, TomMood, LiveCall } from "@/lib/types"
+import type { UserRole, TomState, TomMood, LiveCall, TomOutfit } from "@/lib/types"
 import { mockLiveCall, mockTomStats, tomGreetings } from "@/lib/mock-data"
-import { Phone, MessageSquare } from "lucide-react"
-import Image from "next/image"
+import { Phone, MessageSquare, Shirt } from "lucide-react"
+import { TomAvatar } from "./tom-avatar"
+import { TomClothingPicker } from "./tom-clothing-picker"
 
 export function TomCommanderV6() {
   const [currentRole, setCurrentRole] = useState<UserRole>("sharon")
@@ -23,6 +24,8 @@ export function TomCommanderV6() {
   const [tomMood, setTomMood] = useState<TomMood>("welcoming")
   const [liveCall, setLiveCall] = useState<LiveCall | null>(null)
   const [liveActivities, setLiveActivities] = useState<Array<{id: string, text: string, time: string}>>([])
+  const [tomOutfit, setTomOutfit] = useState<TomOutfit>({})
+  const [showClothingPicker, setShowClothingPicker] = useState(false)
 
   const handleNewActivity = (activityText: string) => {
     const newActivity = {
@@ -134,13 +137,19 @@ export function TomCommanderV6() {
         <div className="space-y-6">
           <div className="bg-gradient-to-br from-amber-900/20 to-slate-900 border border-amber-800/50 rounded-lg p-6">
             <div className="flex items-start gap-4">
-              <Image
-                src={tomAvatars[tomMood] || "/placeholder.svg"}
-                alt="Tom"
-                width={80}
-                height={80}
-                className="rounded-full border-2 border-amber-600"
-              />
+              <div className="relative group">
+                <TomAvatar
+                  src={tomAvatars[tomMood] || "/placeholder.svg"}
+                  size={80}
+                  outfit={tomOutfit}
+                  onClick={() => setShowClothingPicker(!showClothingPicker)}
+                />
+                <div className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-slate-800 border border-amber-600 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                  onClick={() => setShowClothingPicker(!showClothingPicker)}
+                >
+                  <Shirt className="w-3 h-3 text-amber-400" />
+                </div>
+              </div>
               <div className="flex-1 min-w-0">
                 <h2 className="text-xl font-bold text-white mb-1">
                   {currentRole === "sharon"
@@ -170,6 +179,15 @@ export function TomCommanderV6() {
             </div>
           </div>
 
+          {/* Clothing Picker */}
+          {showClothingPicker && (
+            <TomClothingPicker
+              outfit={tomOutfit}
+              onOutfitChange={setTomOutfit}
+              onClose={() => setShowClothingPicker(false)}
+            />
+          )}
+
           {/* Role-specific dashboard below Tom's greeting */}
           {renderDashboard()}
         </div>
@@ -180,6 +198,7 @@ export function TomCommanderV6() {
           <TomStatusPanel
             state={tomState}
             mood={tomMood}
+            outfit={tomOutfit}
             liveCall={liveCall}
             onListenIn={() => console.log("[v0] Listen in")}
             onWhisper={(msg) => console.log("[v0] Whisper:", msg)}

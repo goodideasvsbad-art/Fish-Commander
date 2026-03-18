@@ -8,6 +8,26 @@ export interface User {
   avatar?: string
 }
 
+// === TOM CLOTHING ===
+export type ClothingSlot = "hat" | "face" | "body" | "accessory"
+
+export interface ClothingItem {
+  id: string
+  name: string
+  slot: ClothingSlot
+  emoji: string
+  offset: { top?: string; left?: string; right?: string; bottom?: string }
+  size: string
+  rotation?: string
+}
+
+export interface TomOutfit {
+  hat?: string    // ClothingItem id
+  face?: string   // ClothingItem id
+  body?: string   // ClothingItem id
+  accessory?: string // ClothingItem id
+}
+
 // === TOM STATE ===
 export type TomState = "idle" | "on-call" | "wrap-up" | "paused" | "error"
 
