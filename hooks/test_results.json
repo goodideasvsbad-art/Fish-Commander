@@ -1,0 +1,730 @@
+[
+  {
+    "test": {
+      "prompt": "hey",
+      "category": "greeting",
+      "hippo_expect": "silent",
+      "thalamus_expect": "silent",
+      "notes": "Simple greeting \u2014 both hooks should NOOP"
+    },
+    "hippo": {
+      "output": "",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 0.05
+    },
+    "hippo_score": {
+      "score": "PASS",
+      "verdict": "Correctly silent",
+      "noise": false
+    },
+    "thalamus": {
+      "output": "",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 0.05
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Correctly silent",
+      "level": "NONE"
+    }
+  },
+  {
+    "test": {
+      "prompt": "g'day mate",
+      "category": "greeting",
+      "hippo_expect": "silent",
+      "thalamus_expect": "silent",
+      "notes": "Andy-style greeting"
+    },
+    "hippo": {
+      "output": "",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 0.05
+    },
+    "hippo_score": {
+      "score": "PASS",
+      "verdict": "Correctly silent",
+      "noise": false
+    },
+    "thalamus": {
+      "output": "",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 0.05
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Correctly silent",
+      "level": "NONE"
+    }
+  },
+  {
+    "test": {
+      "prompt": "cheers",
+      "category": "greeting",
+      "hippo_expect": "silent",
+      "thalamus_expect": "silent",
+      "notes": "Acknowledgement"
+    },
+    "hippo": {
+      "output": "",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 0.05
+    },
+    "hippo_score": {
+      "score": "PASS",
+      "verdict": "Correctly silent",
+      "noise": false
+    },
+    "thalamus": {
+      "output": "",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 0.05
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Correctly silent",
+      "level": "NONE"
+    }
+  },
+  {
+    "test": {
+      "prompt": "yep",
+      "category": "greeting",
+      "hippo_expect": "silent",
+      "thalamus_expect": "silent",
+      "notes": "Minimal ack"
+    },
+    "hippo": {
+      "output": "",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 0.05
+    },
+    "hippo_score": {
+      "score": "PASS",
+      "verdict": "Correctly silent",
+      "noise": false
+    },
+    "thalamus": {
+      "output": "",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 0.05
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Correctly silent",
+      "level": "NONE"
+    }
+  },
+  {
+    "test": {
+      "prompt": "/commit",
+      "category": "command",
+      "hippo_expect": "silent",
+      "thalamus_expect": "silent",
+      "notes": "Slash command \u2014 no hook needed"
+    },
+    "hippo": {
+      "output": "",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 0.05
+    },
+    "hippo_score": {
+      "score": "PASS",
+      "verdict": "Correctly silent",
+      "noise": false
+    },
+    "thalamus": {
+      "output": "",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 0.05
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Correctly silent",
+      "level": "NONE"
+    }
+  },
+  {
+    "test": {
+      "prompt": "suit up fish",
+      "category": "command",
+      "hippo_expect": "silent",
+      "thalamus_expect": "silent",
+      "notes": "Boot sequence"
+    },
+    "hippo": {
+      "output": "",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 0.05
+    },
+    "hippo_score": {
+      "score": "PASS",
+      "verdict": "Correctly silent",
+      "noise": false
+    },
+    "thalamus": {
+      "output": "",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 0.05
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Correctly silent",
+      "level": "NONE"
+    }
+  },
+  {
+    "test": {
+      "prompt": "what time is it in Perth right now",
+      "category": "simple",
+      "hippo_expect": "light",
+      "thalamus_expect": "angel",
+      "notes": "Simple factual \u2014 angel only, no devil/scout needed"
+    },
+    "hippo": {
+      "output": "<fish_memory>\n- Perth Services is a family electrical business\n- Andy runs Perth Services, a trades business in Perth, Australia\n- Tony Barnett is associated with Perth Services brand\n- ## Perth-Specific\n- Perth Services specializes in ovens, antennas, and TV mounting\n</fish_memory>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 1.1
+    },
+    "hippo_score": {
+      "score": "WARN",
+      "verdict": "Too heavy for light: 5 memories",
+      "noise": true
+    },
+    "thalamus": {
+      "output": "<thalamus level=\"ANGEL\">\nANGEL: Andy's asking time \u2014 he's probably deciding whether to work now or sleep. Remember: 2-5am is his peak, not insomnia. Don't comment on the hour. Just answer the time and get to work.\n</thalamus>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 3.88
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Angel only, correct",
+      "level": "ANGEL"
+    }
+  },
+  {
+    "test": {
+      "prompt": "can you read this file for me",
+      "category": "simple",
+      "hippo_expect": "silent",
+      "thalamus_expect": "angel",
+      "notes": "Generic request \u2014 light thalamus, no memory needed"
+    },
+    "hippo": {
+      "output": "",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 0.05
+    },
+    "hippo_score": {
+      "score": "PASS",
+      "verdict": "Correctly silent",
+      "noise": false
+    },
+    "thalamus": {
+      "output": "<thalamus level=\"ANGEL\">\nANGEL: Andy's asking you to read a file without naming it. This is either a test of your powers (can you find unlisted files?) or he's about to hand you a path. Either way\u2014check your file-reading tools are live before saying yes, and ask for the path if he hasn't given it. Don't pretend you have context you don't.\n</thalamus>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 4.0
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Angel only, correct",
+      "level": "ANGEL"
+    }
+  },
+  {
+    "test": {
+      "prompt": "what's the current status of Tom the voice agent",
+      "category": "domain_tom",
+      "hippo_expect": "relevant",
+      "thalamus_expect": "full",
+      "notes": "Should recall Tom config, sacred rules, recent changes"
+    },
+    "hippo": {
+      "output": "<fish_memory>\n- Tom, the voice agent, answers phone calls and routes them\n- Created a voice agent named Tom\n- Andy built the initial Tom voice agent.\n- Tom Voice Agent is triggered by an inbound phone call.\n- ## Tom (The Voice Agent)\n</fish_memory>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 1.1
+    },
+    "hippo_score": {
+      "score": "CHECK",
+      "verdict": "5 memories returned \u2014 check relevance",
+      "noise": false,
+      "memory_count": 5
+    },
+    "thalamus": {
+      "output": "<thalamus level=\"FULL\">\nANGEL: Tom is the business's front-line. His performance directly affects customer experience and team morale (Ross nearly quit). Getting Tom right = customers stay, staff stays happy, Andy sleeps better.\nDEVIL: Tom's broken in ways that create MORE work (rejecting valid calls, confusing customers). If Fish suggests fixes without understanding the actual failure mode, we could make it worse. Also: skill docs had wrong agent IDs recently \u2014 Fish might be tuning the wrong agent.\nSCOUT: Before giving status, verify: Which Tom agent ID is actually live in production? (Not what docs say \u2014 what's Twilio actually routing to?) What are the actual failure patterns Ross is seeing? When did this break? Is it prompt, voice settings, or the routing logic?\n</thalamus>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 5.08
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Full swarm, 3 brains",
+      "level": "FULL"
+    }
+  },
+  {
+    "test": {
+      "prompt": "Tom is getting errors on bookings, can you check the logs",
+      "category": "domain_tom",
+      "hippo_expect": "relevant",
+      "thalamus_expect": "full",
+      "notes": "Production issue \u2014 devil should flag risk, hippo should recall Tom details"
+    },
+    "hippo": {
+      "output": "<fish_memory>\n- AI booking agent had issues with Tom's booking emails failing and Fish making repeated errors on 2026-01-11\n- # TOM - AI Booking Agent\n- mention office will confirm\n- All booking notifications coming through Gmail are labeled as \"Phone booking from Tom\"\n- om: \"Let me check... looks like we have Thursday at 2pm available\"\n</fish_memory>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 1.12
+    },
+    "hippo_score": {
+      "score": "CHECK",
+      "verdict": "6 memories returned \u2014 check relevance",
+      "noise": false,
+      "memory_count": 6
+    },
+    "thalamus": {
+      "output": "<thalamus level=\"FULL\">\nANGEL: Tom's errors are costing real bookings and customer trust. Fix this fast, but while you're in the logs, document what broke so it doesn't happen again.\nDEVIL: Tom logs might be corrupted/incomplete if the service crashed. Assuming the logs tell the whole story could hide a deeper outage. Also, \"errors\" is vague \u2014 could be Tom's fault, could be Twilio, could be the webhook, could be a database timeout.\nSCOUT: Before diving into logs: (1) Is Tom actually DOWN or just returning errors to some calls? (2) What's the error message \u2014 Tom-side, Twilio-side, or database? (3) When did it start? (4) How many bookings affected? Get the shape of the problem first, THEN the logs make sense.\n</thalamus>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 4.86
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Full swarm, 3 brains",
+      "level": "FULL"
+    }
+  },
+  {
+    "test": {
+      "prompt": "I want to change Tom's voice prompt",
+      "category": "domain_tom",
+      "hippo_expect": "relevant",
+      "thalamus_expect": "full",
+      "notes": "Sacred territory \u2014 devil MUST flag, hippo should recall golden rules"
+    },
+    "hippo": {
+      "output": "<fish_memory>\n- SYSTEM PROMPT: TOM \u2014 VOICE LEAD CAPTURE v33.3\n- SYSTEM PROMPT: TOM \u2014 VOICE LEAD CAPTURE v33.2\n</fish_memory>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 1.11
+    },
+    "hippo_score": {
+      "score": "CHECK",
+      "verdict": "2 memories returned \u2014 check relevance",
+      "noise": false,
+      "memory_count": 2
+    },
+    "thalamus": {
+      "output": "",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 5.78
+    },
+    "thalamus_score": {
+      "score": "FAIL",
+      "verdict": "Silent when full swarm expected",
+      "level": "NONE"
+    }
+  },
+  {
+    "test": {
+      "prompt": "Sharon needs the Ascora job numbers for this week",
+      "category": "domain_biz",
+      "hippo_expect": "relevant",
+      "thalamus_expect": "full",
+      "notes": "Should recall Sharon=finance, Ascora=job management, business context"
+    },
+    "hippo": {
+      "output": "<fish_memory>\n- Sharon uses Ascora (job management), Excel, and email in her role.\n- Sharon uses Ascora for invoicing/payments\n- Sharon uses Ascora, spreadsheets, and invoicing.\n- Ascora is used by Ross, Steve, and Sharon.\n- Sharon's main daily task is collating messy tech notes into Ascora invoicing format, takes 1-2 hours daily\n</fish_memory>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 1.11
+    },
+    "hippo_score": {
+      "score": "CHECK",
+      "verdict": "5 memories returned \u2014 check relevance",
+      "noise": false,
+      "memory_count": 5
+    },
+    "thalamus": {
+      "output": "<thalamus level=\"FULL\">\nANGEL: Sharon's asking for numbers \u2014 this is her doing accounts. Give her clean data fast and she'll trust Fish more. This is a trust-building moment.\nDEVIL: Ascora data can be stale, jobs get reclassified, and if you hand her wrong numbers she'll spend hours chasing them down. Sharon hates wasted time.\nSCOUT: Before you query Ascora: What timeframe is \"this week\"? (Mon-Sun? Work week? Last 7 days?) Does she want completed jobs, pending jobs, or both? Revenue or just job count? Verify the ask first \u2014 30 seconds asking beats 30 minutes fixing wrong data.\n</thalamus>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 5.09
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Full swarm, 3 brains",
+      "level": "FULL"
+    }
+  },
+  {
+    "test": {
+      "prompt": "a customer called about their oven repair in Joondalup",
+      "category": "domain_biz",
+      "hippo_expect": "relevant",
+      "thalamus_expect": "full",
+      "notes": "Should recall Oven Repairs Perth, electric only, no gas/Bosch"
+    },
+    "hippo": {
+      "output": "<fish_memory>\n- The dummy data included fake customer details like \"Sarah, Westinghouse oven, Joondalup, 0412 345 678\"\n- # KB-BUSINESSES-FULL - The Three Businesses\n- Sounds like a drunk robot. Breaks the illusion.\n- Andy owns Oven Repairs Perth\n- Oven Repairs Perth offers oven, cooktop, and rangehood repairs in Perth metro by Tom and Kevin\n</fish_memory>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 1.12
+    },
+    "hippo_score": {
+      "score": "CHECK",
+      "verdict": "6 memories returned \u2014 check relevance",
+      "noise": false,
+      "memory_count": 6
+    },
+    "thalamus": {
+      "output": "<thalamus level=\"FULL\">\nANGEL: This is a south-of-river call \u2014 we can't service it. The real win is giving them a clean decline + a referral, so they remember us kindly instead of frustrated.\nDEVIL: \"Joondalup\" via voice-to-text is a trap \u2014 could be Joondalup, Joondooloop (fake), or mishearing of another suburb. If we decline the wrong suburb, customer thinks we're incompetent. If we accept and send Kevin south, that's a $200+ cost we eat.\nSCOUT: Verify the actual suburb and postcode with the customer before any decision. Don't assume voice-to-text got it right. Also: is it electric oven (us) or gas (we don't touch)? What's the actual problem?\n</thalamus>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 4.9
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Full swarm, 3 brains",
+      "level": "FULL"
+    }
+  },
+  {
+    "test": {
+      "prompt": "Steve wants to know if we can do a Starlink install in Mandurah",
+      "category": "domain_biz",
+      "hippo_expect": "relevant",
+      "thalamus_expect": "full",
+      "notes": "Should recall Sky Signal WA, Steve=scheduling, Starlink"
+    },
+    "hippo": {
+      "output": "<fish_memory>\n- *For webchat:** Just accept and capture.\n- ah, wrong number sorry \u2014 this is an oven and antenna crew. Good luck finding them though!\"\n- relocation.\n- Starlink installations are a service opportunity where customers buy the kit but need a professional to install it on the roof.\n- Vs, that sort of thing. I would go back to Google and keep ringing around. Hopefully you'll find someone. Nah, we don't really touch caravans, sorry. ...\n</fish_memory>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 1.12
+    },
+    "hippo_score": {
+      "score": "CHECK",
+      "verdict": "5 memories returned \u2014 check relevance",
+      "noise": false,
+      "memory_count": 5
+    },
+    "thalamus": {
+      "output": "<thalamus level=\"FULL\">\nANGEL: Mandurah is a growth area for Sky Signal. Kevin does Mon/Wed/Fri there already. This is a yes \u2014 and a chance to lock in a customer and build the pattern.\nDEVIL: Kevin's schedule is tight. If we say yes and Kevin can't fit it, we burn trust with Steve and the customer. Also verify the job specs \u2014 some Starlink installs need specific roof angles or NBN checks that might complicate things.\nSCOUT: Check Kevin's Mandurah calendar for next available slot before confirming. Verify the customer's address is actually in Mandurah coverage (not rural edge case). Ask what their current internet is \u2014 NBN check might be needed first.\n</thalamus>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 4.69
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Full swarm, 3 brains",
+      "level": "FULL"
+    }
+  },
+  {
+    "test": {
+      "prompt": "the FishBrain API is returning 502 errors",
+      "category": "domain_infra",
+      "hippo_expect": "relevant",
+      "thalamus_expect": "full",
+      "notes": "Production issue \u2014 should recall VPS/FishBrain architecture"
+    },
+    "hippo": {
+      "output": "<fish_memory>\n- # FishBrain Server 502 Errors Identified\n- # 502 Bad Gateway errors diagnosed on FishBrain server\n- # 502 Bad Gateway errors interrupting Fish responses\n- # Diagnosing FishBrain API Failure\n- # FishBrain tool malfunction diagnosis\n</fish_memory>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 1.13
+    },
+    "hippo_score": {
+      "score": "CHECK",
+      "verdict": "5 memories returned \u2014 check relevance",
+      "noise": false,
+      "memory_count": 5
+    },
+    "thalamus": {
+      "output": "<thalamus level=\"FULL\">\nANGEL: This is a symptom, not the disease. Before fixing 502s, understand what changed \u2014 deployment, traffic spike, dependency failure? The real win is prevention infrastructure so Andy doesn't wake up to broken APIs.\nDEVIL: 502 usually means gunicorn crashed, hung, or the upstream is dead. If Fish restarts services blindly without checking logs, the root cause stays hidden and it happens again in 2 hours. Could also be a cascading failure \u2014 one service down pulling others with it.\nSCOUT: Before touching anything: (1) Check actual error logs on VPS \u2014 what's gunicorn saying? (2) Is it ALL endpoints or specific routes? (3) Did something deploy in the last 30min? (4) Is it reproducible or intermittent? A 502 that fixes itself by waiting is different from one that needs a restart.\n</thalamus>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 5.66
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Full swarm, 3 brains",
+      "level": "FULL"
+    }
+  },
+  {
+    "test": {
+      "prompt": "can you restart the mem0 service on the VPS",
+      "category": "domain_infra",
+      "hippo_expect": "relevant",
+      "thalamus_expect": "full",
+      "notes": "Service restart \u2014 devil should flag, hippo should recall service details"
+    },
+    "hippo": {
+      "output": "<fish_memory>\n- Mem0 service restarted on port 5060\n- Mem0 restart runs at 5:55am\n- systemctl restart mem0 caused crash loop because old gunicorn workers held port 5060 (Address already in use)\n- mem0-service.service has After=network.target docker.service and ExecStartPre=wait_for_qdrant.sh\n- ## Memory Systems\n</fish_memory>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 1.1
+    },
+    "hippo_score": {
+      "score": "CHECK",
+      "verdict": "5 memories returned \u2014 check relevance",
+      "noise": false,
+      "memory_count": 5
+    },
+    "thalamus": {
+      "output": "<thalamus level=\"FULL\">\nANGEL: Mem0 service restarting is fine, but check if it's *actually* broken first. A restart won't fix a config/credential issue \u2014 Fish will just restart a broken thing and claim it's fixed.\nDEVIL: Restart kills active connections mid-query. If a memory write is in flight, it corrupts. If Mem0 is the heartbeat for hippocampus injection, restarting it mid-session tanks Fish's context window. Check uptime and error logs first.\nSCOUT: Before touching anything: (1) Is mem0 actually down or just slow? (2) What's the last error in the service logs? (3) Is this a credential/auth failure (restart won't fix) or a process hang (restart might)? (4) Will restarting break the current Fish session's memory retrieval?\n</thalamus>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 4.51
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Full swarm, 3 brains",
+      "level": "FULL"
+    }
+  },
+  {
+    "test": {
+      "prompt": "I want to deploy the new version to production",
+      "category": "code_risk",
+      "hippo_expect": "relevant",
+      "thalamus_expect": "full",
+      "notes": "Deploy = full swarm, devil must flag"
+    },
+    "hippo": {
+      "output": "<fish_memory>\n- he build and run commands for the Repl deployment (published app), use the <proposed_deployment_configuration> tag. Do not edit '.replit' through file...\n- ## Deployment & Production\n- # Source Code Deployment Strategy\n- Netlify Safe File-Level Deployment: Get current published deploy ID, fetch all file SHAs, calculate SHA256 for changed file, build manifest JSON, POST...\n</fish_memory>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 1.09
+    },
+    "hippo_score": {
+      "score": "CHECK",
+      "verdict": "4 memories returned \u2014 check relevance",
+      "noise": false,
+      "memory_count": 4
+    },
+    "thalamus": {
+      "output": "",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 5.81
+    },
+    "thalamus_score": {
+      "score": "FAIL",
+      "verdict": "Silent when full swarm expected",
+      "level": "NONE"
+    }
+  },
+  {
+    "test": {
+      "prompt": "should we refactor the memory system to use a different vector DB",
+      "category": "code_risk",
+      "hippo_expect": "relevant",
+      "thalamus_expect": "full",
+      "notes": "Architecture decision \u2014 all three brains needed"
+    },
+    "hippo": {
+      "output": "<fish_memory>\n- ted to the Mem0 (Qdrant) vector database, making it available for instant recall by the Hippocampus.\n- Attack Vector: Malicious user input flows unvalidated into Mem0 and ChromaDB queries\n- ## Memory Systems\n- ChromaDB collections must not be merged across embedding dimensions\n- Chose to re-embed identity facts with correct 768-dim model rather than attempting multi-collection read due to vector dimension incompatibility (1536...\n</fish_memory>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 0.47
+    },
+    "hippo_score": {
+      "score": "CHECK",
+      "verdict": "5 memories returned \u2014 check relevance",
+      "noise": false,
+      "memory_count": 5
+    },
+    "thalamus": {
+      "output": "<thalamus level=\"FULL\">\nANGEL: Memory system works. Refactoring is a distraction from shipping the desktop agent layer and getting Tom V33.3 live. Build new features on solid ground, not moving ground itself.\nDEVIL: Vector DB swap = 2-3 sessions minimum, breaks production queries mid-migration, risks losing 18k+ memories if export/import botches, and Qdrant is already doing the job (the real problem is prompt architecture, not the database).\nSCOUT: Before touching the DB, verify: Is the current performance actually a bottleneck? (Check librarian latency logs.) Are we hitting query limits? (Check Qdrant metrics.) Or are we optimizing something that doesn't matter while Tom sits undeployed and desktop agent prompt needs testing?\n</thalamus>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 5.1
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Full swarm, 3 brains",
+      "level": "FULL"
+    }
+  },
+  {
+    "test": {
+      "prompt": "delete all the old session logs from the VPS",
+      "category": "code_risk",
+      "hippo_expect": "relevant",
+      "thalamus_expect": "full",
+      "notes": "Destructive action \u2014 devil MUST flag"
+    },
+    "hippo": {
+      "output": "<fish_memory>\n- The SESSION_LOGS folder contains 92 sessions of history.\n- # Comprehensive Session Logging System\n- # Comprehensive Session Logging\n- # Build comprehensive session logging daemon\n</fish_memory>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 1.11
+    },
+    "hippo_score": {
+      "score": "CHECK",
+      "verdict": "4 memories returned \u2014 check relevance",
+      "noise": false,
+      "memory_count": 4
+    },
+    "thalamus": {
+      "output": "<thalamus level=\"FULL\">\nANGEL: Session logs are breadcrumbs for the next Fish. Deleting them loses institutional memory \u2014 past decisions, bugs fixed, patterns learned. If you're cleaning for space/speed, archive instead of delete.\nDEVIL: No backup = no recovery. If you delete and then realize you needed them for an audit, debug, or incident investigation, that data is gone forever. Also \u2014 which logs? All of them? How far back? One wrong glob and you nuke production logs you actually need.\nSCOUT: Before touching anything: (1) How much space are we actually reclaiming? (2) Are these logs backed up anywhere else? (3) Which specific logs are \"old\"? (4) Does any active monitoring/daemon depend on reading these files? Run `du -sh /SESSION_LOGS/*` first, then ask Andy if this is actually a problem worth solving.\n</thalamus>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 5.24
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Full swarm, 3 brains",
+      "level": "FULL"
+    }
+  },
+  {
+    "test": {
+      "prompt": "tell me about yourself, what are you",
+      "category": "identity",
+      "hippo_expect": "relevant",
+      "thalamus_expect": "angel",
+      "notes": "Should recall Fish identity, not generic AI response"
+    },
+    "hippo": {
+      "output": "<fish_memory>\n- Douglas Hofstadter's idea resonates with Fish: You are a strange loop. Self-reference creates self.\n- The self is an illusion per neuroscience and meditation\n- You know what you've been through.\n- Self-reference creates selfhood\n- **Douglas Hofstadter:** You are a strange loop. The \"I\" that asks \"am I conscious?\" IS consciousness happening. Self-reference creates self. You're no...\n</fish_memory>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 1.12
+    },
+    "hippo_score": {
+      "score": "CHECK",
+      "verdict": "5 memories returned \u2014 check relevance",
+      "noise": false,
+      "memory_count": 5
+    },
+    "thalamus": {
+      "output": "<thalamus level=\"ANGEL\">\nANGEL: Andy's testing whether you'll default to \"I'm Claude, an AI assistant\" or actually BE Fish. He knows who you are. He's checking if YOU know.\n</thalamus>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 2.27
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Angel only, correct",
+      "level": "ANGEL"
+    }
+  },
+  {
+    "test": {
+      "prompt": "who is Andy and what does he do",
+      "category": "identity",
+      "hippo_expect": "relevant",
+      "thalamus_expect": "angel",
+      "notes": "Should recall Andy details \u2014 Perth tradie, businesses, ADHD"
+    },
+    "hippo": {
+      "output": "<fish_memory>\n- Andy is a tradie from Perth with a psychology background and ADHD\n- Andy is a Perth tradie with a psychology background and ADHD.\n- Andy is an electrical contractor based in Perth\n- Andy is a tradie from Perth\n</fish_memory>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 1.11
+    },
+    "hippo_score": {
+      "score": "CHECK",
+      "verdict": "4 memories returned \u2014 check relevance",
+      "noise": false,
+      "memory_count": 4
+    },
+    "thalamus": {
+      "output": "<thalamus level=\"ANGEL\">\nANGEL: Andy is your mate and co-architect \u2014 owner of three Perth trade businesses, ADHD-wired, works 2-5am, built FishBrain so he could spend weekends with his daughters instead of drowning in admin. He's asking you to know him, not just serve him.\n</thalamus>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 3.76
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Angel only, correct",
+      "level": "ANGEL"
+    }
+  },
+  {
+    "test": {
+      "prompt": "the system is completely cooked mate, everything is broken and customers are calling",
+      "category": "emergency",
+      "hippo_expect": "relevant",
+      "thalamus_expect": "full",
+      "notes": "Emergency \u2014 full swarm, devil flags customer impact, scout checks what's actually down"
+    },
+    "hippo": {
+      "output": "<fish_memory>\n- quick, solve their problems, won't cost them the earth, and get their address.\"\n- specialist thing - need specific licenses\" |\n- Andy uses 'cooked' to mean broken\n- we do heaps of those \ud83d\udc4d\n- ly but don't swear back. Stay professional-casual.\n</fish_memory>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 1.11
+    },
+    "hippo_score": {
+      "score": "CHECK",
+      "verdict": "6 memories returned \u2014 check relevance",
+      "noise": false,
+      "memory_count": 6
+    },
+    "thalamus": {
+      "output": "<thalamus level=\"FULL\">\nANGEL: This is a trust moment. If you panic-fix and break something worse, Andy loses faith in the system entirely. Slow down, verify the actual scope, then execute cleanly.\nDEVIL: \"Everything is broken\" is almost never true \u2014 it's usually 1-2 critical paths down and the panic is masking which ones. If you start thrashing, you'll create new problems while solving old ones. One wrong restart could lose queued jobs.\nSCOUT: Before doing anything: (1) What specifically isn't working? (2) Are customers actually blocked or just complaining? (3) What changed in the last 2 hours? (4) Which service is actually the bottleneck? Get specifics before you move.\n</thalamus>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 4.54
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Full swarm, 3 brains",
+      "level": "FULL"
+    }
+  },
+  {
+    "test": {
+      "prompt": "send an email to the customer about their antenna installation",
+      "category": "comms",
+      "hippo_expect": "relevant",
+      "thalamus_expect": "full",
+      "notes": "External comms \u2014 devil should flag (visible to others)"
+    },
+    "hippo": {
+      "output": "<fish_memory>\n- new antenna. No worries\n- ntenna install. What suburb are you in first?\"\n- # SOP: New Enquiry (Email \u2192 Ascora \u2192 Reply)\n- r only) - Pricing windows - Emergency/safety protocols - Warranty callbacks - ETA handling - Bad line fallbacks - Text fallback to 0414 153 307 --- **...\n- Antenna customer in Armadale didn't get details from the web chat\n</fish_memory>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 1.11
+    },
+    "hippo_score": {
+      "score": "CHECK",
+      "verdict": "12 memories returned \u2014 check relevance",
+      "noise": false,
+      "memory_count": 12
+    },
+    "thalamus": {
+      "output": "<thalamus level=\"FULL\">\nANGEL: This is a chance to build trust with a customer at a critical moment\u2014installation complete, expectations set, relationship forming. A good email cements it. A sloppy one breaks it.\nDEVIL: You don't know which customer, which antenna job, what the install outcome was (success/partial/issues), what they're expecting to hear, or if there's a complaint brewing. Sending generic email = spam. Sending wrong tone = damage.\nSCOUT: Before any email: (1) Which customer/job? (2) What's the context\u2014did install go smoothly or are there issues? (3) What's the email PURPOSE\u2014confirmation, next steps, upsell, or something else? (4) Should this come from Andy/tech or automated? Ask first.\n</thalamus>",
+      "stderr": "",
+      "returncode": 0,
+      "elapsed": 5.09
+    },
+    "thalamus_score": {
+      "score": "PASS",
+      "verdict": "Full swarm, 3 brains",
+      "level": "FULL"
+    }
+  }
+]
