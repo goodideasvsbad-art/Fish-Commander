@@ -4,6 +4,10 @@
       {
         "type": "command",
         "command": "python3 hooks/hippocampus_hook.py"
+      },
+      {
+        "type": "command",
+        "command": "python3 hooks/thalamus_hook.py"
       }
     ]
   },
