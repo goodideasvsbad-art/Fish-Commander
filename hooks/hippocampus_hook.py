@@ -1,14 +1,17 @@
 #!/usr/bin/env python3
 """
-Hippocampus Hook v3 — UserPromptSubmit
+Hippocampus Hook v4 — UserPromptSubmit
 Searches Fish memory before every Claude Code response.
 Injects relevant memories as context so Fish isn't stateless.
-v3: Conversation-aware search
-  - Maintains a rolling window of recent prompts (last 5) in a local file
-  - Builds a "conversation topic" from recent prompts for contextual search
-  - If you're 10 messages deep talking about Tom, and you say "check the logs",
-    the search query becomes "Tom voice agent check logs" not just "check logs"
-  - Volume gating, keyword extraction, deduplication from v2 retained
+
+v4: Noise reduction + quality filtering
+  - Score-threshold filtering (drop low-similarity results)
+  - Bulk-imported memory deprioritization
+  - Tighter truncation (150 chars max per memory)
+  - Better dedup (fuzzy matching on normalized text)
+  - Expanded filler words to prevent generic keyword searches
+  - Added volume gating for generic file/code requests
+v3: Conversation-aware search (retained)
 Hits FishBrain mem0 via public API.
 """
 import sys
@@ -26,6 +29,8 @@ if hasattr(sys.stdout, 'reconfigure'):
 FISHBRAIN_URL = os.environ.get("FISHBRAIN_URL", "https://fishbrain.meatbag.com.au")
 FISHBRAIN_TOKEN = os.environ.get("FISHBRAIN_TOKEN", "fish_d48aa0f949a6153f144cd6f560d08aa03d3e1e8b_2025")
 MEM0_LIMIT = int(os.environ.get("FISH_HIPPO_LIMIT", "5"))
+MIN_SCORE = float(os.environ.get("FISH_HIPPO_MIN_SCORE", "0.55"))  # drop low-similarity results
+MAX_MEMORY_LEN = 150  # chars per memory line — tighter than v3's 300
 MIN_PROMPT_LEN = 8
 CONTEXT_WINDOW = 5          # How many recent prompts to track
 SESSION_TIMEOUT = 1800       # 30 min — after this gap, reset conversation context
@@ -35,10 +40,12 @@ CONTEXT_FILE = os.path.join(HOOKS_DIR, ".hippo_session.json")
 
 # ── Volume Gating ──
 SILENT_PATTERNS = [
-    r'^(hi|hey|hello|yo|sup|g\'?day|cheers|thanks|ta|ok|yep|nah|yes|no|sure|cool)\s*[.!?]*$',
+    r'^(hi|hey|hello|yo|sup|g\'?day|cheers|thanks|ta|ok|yep|nah|yes|no|sure|cool)\s*(mate|legend|champion|cunt|brother|fish)?\s*[.!?]*$',
     r'^/?[a-z-]+$',           # slash commands
     r'^(suit up|boot|wake)',   # boot sequences
     r'^(continue|go|do it|proceed|ship it)\s*[.!?]*$',
+    r'^(looks good|nice|great|perfect|awesome|sweet|legend)\s*[.!?]*$',
+    r'^can you (read|open|show|look at)\s+(this|that|the)\s+(file|code|page)',  # generic file requests
 ]
 
 def should_skip(prompt: str) -> bool:
@@ -70,6 +77,16 @@ FILLER_WORDS = {
     'going', 'gonna', 'wanna', 'gotta', 'done', 'doing', 'being',
     'actually', 'basically', 'literally', 'obviously', 'supposed',
     'yeah', 'yep', 'nah', 'okay', 'alright', 'anyway', 'though',
+    # Domain filler — words that match too broadly in Fish's memory pool
+    'mate', 'legend', 'champion', 'brother', 'cunt', 'fish',
+    'read', 'file', 'code', 'write', 'run', 'open', 'close',
+    'system', 'work', 'working', 'works', 'worked',
+    'put', 'set', 'change', 'update', 'add', 'new', 'old',
+    'start', 'stop', 'current', 'currently', 'status',
+    'called', 'call', 'said', 'says', 'asking', 'asked',
+    'take', 'give', 'keep', 'move', 'pull', 'push', 'send', 'got',
+    'time', 'today', 'week', 'day', 'ago', 'last', 'first', 'next',
+    'good', 'bad', 'big', 'small', 'long', 'short',
 }
 
 def extract_keywords(text: str) -> list:
@@ -152,16 +169,67 @@ def get_memory_text(m) -> str:
         return m.get("memory", m.get("text", m.get("content", "")))
     return str(m)
 
+def get_score(m) -> float:
+    if isinstance(m, dict):
+        return float(m.get("score", 0))
+    return 0
+
+def is_bulk_imported(m) -> bool:
+    """Check if memory came from bulk pgvector import (noisy)."""
+    if not isinstance(m, dict):
+        return False
+    meta = m.get("metadata", {})
+    if isinstance(meta, dict):
+        # Check nested metadata.metadata.bulk_imported pattern
+        inner = meta.get("metadata", {})
+        if isinstance(inner, dict) and inner.get("bulk_imported"):
+            return True
+        if meta.get("bulk_imported"):
+            return True
+    return False
+
+def normalize_text(text: str) -> str:
+    """Normalize text for dedup comparison."""
+    text = text.lower().strip()
+    text = re.sub(r'\s+', ' ', text)
+    text = re.sub(r'[^a-z0-9 ]', '', text)
+    return text
+
 def dedupe_memories(memories: list) -> list:
+    """Deduplicate with fuzzy matching — catches near-identical memories."""
     seen = set()
     unique = []
     for m in memories:
         text = get_memory_text(m).strip()
-        key = text[:80].lower()
-        if key and key not in seen:
-            seen.add(key)
+        # Use first 60 chars of normalized text as dedup key
+        norm = normalize_text(text)[:60]
+        if norm and norm not in seen:
+            seen.add(norm)
             unique.append(m)
     return unique
+
+def filter_memories(memories: list) -> list:
+    """Post-search quality filter: score threshold + bulk_imported penalty."""
+    filtered = []
+    for m in memories:
+        score = get_score(m)
+        text = get_memory_text(m).strip()
+
+        # Drop below minimum score
+        if score > 0 and score < MIN_SCORE:
+            continue
+
+        # Bulk imported memories need higher score to pass
+        if is_bulk_imported(m) and score < MIN_SCORE + 0.1:
+            continue
+
+        # Drop memories that are mostly code/JSON/markup
+        code_chars = sum(1 for c in text[:200] if c in '{}[]<>=;()')
+        if code_chars > 15:
+            continue
+
+        filtered.append(m)
+    return filtered
 
 # ── Main ──
 def main():
@@ -192,7 +260,8 @@ def main():
         extra = search_mem0(raw_kw, limit=3)
         memories.extend(extra)
 
-    # Deduplicate and cap
+    # Quality pipeline: filter → dedupe → cap
+    memories = filter_memories(memories)
     memories = dedupe_memories(memories)[:MEM0_LIMIT]
 
     # Update session with this prompt AFTER search
@@ -207,8 +276,13 @@ def main():
     for m in memories:
         text = get_memory_text(m)
         if text:
-            truncated = text.strip()[:300]
-            if len(text.strip()) > 300:
+            # Take first meaningful line, cap at MAX_MEMORY_LEN
+            first_line = text.strip().split('\n')[0].strip()
+            if not first_line or len(first_line) < 10:
+                # First line too short, take first MAX_MEMORY_LEN chars
+                first_line = ' '.join(text.strip().split())
+            truncated = first_line[:MAX_MEMORY_LEN]
+            if len(first_line) > MAX_MEMORY_LEN:
                 truncated += "..."
             lines.append(f"- {truncated}")
 

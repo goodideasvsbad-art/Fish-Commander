@@ -56,6 +56,16 @@ CODE_PATTERNS = [
     r'(tom|voice agent|eleven ?labs|booking)',
 ]
 
+# Business domain terms — these need full swarm (customers, team, ops)
+BUSINESS_PATTERNS = [
+    r'(ascora|job\s*number|invoic)',
+    r'(sharon|steve|tony|kevin|ross)',        # team members
+    r'(oven\s*repair|starlink|antenna|electrical)',  # service types
+    r'(customer|caller|complaint|callback)',
+    r'(schedule|availability|north|south|mandurah|joondalup)',
+    r'(perth\s*services|sky\s*signal|oven\s*repairs?\s*perth)',
+]
+
 COMPLEX_PATTERNS = [
     r'(should I|should we|what if|trade.?off|strategy|plan|design|architect)',
     r'(change.*prompt|change.*soul|change.*identity|edit.*tom)',
@@ -78,6 +88,9 @@ def classify_swarm(prompt: str) -> str:
     """Classify prompt into ANGEL / FULL."""
     lower = prompt.lower()
     for pattern in CODE_PATTERNS:
+        if re.search(pattern, lower):
+            return "FULL"
+    for pattern in BUSINESS_PATTERNS:
         if re.search(pattern, lower):
             return "FULL"
     for pattern in COMPLEX_PATTERNS:
