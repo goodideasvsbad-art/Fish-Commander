@@ -112,7 +112,7 @@ def suburb_from_campaign(campaign):
     """Extract suburb name from campaign name for H1 personalisation."""
     # Strip known non-suburb words
     noise = {'tv', 'antennas', 'antenna', 'starlink', 'electrician', 'all',
-             'perth', 'joondalup', '-', '&', 'wa', 'exact', 'phrase', 'broad',
+             'perth', '-', '&', 'wa', 'exact', 'phrase', 'broad',
              'night', 'suburbs', 'local', 'search', 'campaign'}
     parts = campaign.split()
     words = [w for w in parts if w.lower().strip('()-') not in noise and w.strip('()-')]
