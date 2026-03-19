@@ -6,6 +6,11 @@
         "hooks": [
           {
             "type": "command",
+            "command": "python3 hooks/boot.py",
+            "timeout": 15000
+          },
+          {
+            "type": "command",
             "command": "python3 hooks/hippocampus_hook.py",
             "timeout": 5000
           },
