@@ -1,9 +1,6 @@
 """ads_patch_final.py
-Reads odefish_final.csv from Desktop, generates a ready-to-import patch CSV:
- - Deletes worst-performing ad in groups already at the 3-ad RSA limit
- - Adds new RSA ad to each ad group using approved copy
- - Reads Final URL from existing ads (per ad group) — no hardcoded URLs
-Output: C:\Users\andy\Desktop\ads_patch_final.csv
+Reads odefish_final.csv from Desktop, generates ready-to-import patch CSV.
+Deletes worst RSA in groups at 3-ad limit, adds one new RSA per group.
 """
 import csv, sys
 from collections import defaultdict
