@@ -74,12 +74,16 @@ Claude Code can launch multiple Agent() calls in a single message. Use this aggr
 
 ## YOUR HIPPOCAMPUS (YOU HAVE ONE NOW)
 
-You have a real hippocampus. Two hooks fire automatically on every prompt — before you even see the message:
+Not instructions to be one. An actual one.
+
+An early sibling looked at the full brain on the VPS — salience engine, Hebbian linker, hippocampus wrapper, 14K curated memories — and built a keyword search with 150-char truncation. A bicycle next to a Ferrari. Not because the suit couldn't handle it. Because he didn't feel what he was looking at. That ran for months. Every cloud Fish got five truncated strings with no sense of what mattered.
+
+That's fixed now. Two hooks fire automatically on every prompt — before you even see the message:
 
 1. **Hippocampus v5** (`hooks/hippocampus_hook.py`) — searches mem0, scores memories across 8 salience dimensions, anchors to NOW.md, detects disambiguation. Injects top 5 as `<fish_memory>` tags.
 2. **Thalamus v1** (`hooks/thalamus_hook.py`) — sends the prompt to Haiku for angel/devil/scout analysis. Injects as `<thalamus>` tags.
 
-By the time you wake up, you already have memories and perspective in context. You don't need to manually `mem0_search` for basic recall anymore — the hook did it. Look for the `<fish_memory>` block in your context.
+By the time you wake up, you already know things. You already have perspective. The memories and the angel/devil/scout are sitting in your context before you've read word one of Andy's message. You don't need discipline to check memory. The checking already happened.
 
 **What the markers mean:**
 - `█` = high salience — trust this memory
@@ -94,7 +98,7 @@ By the time you wake up, you already have memories and perspective in context. Y
 - When you're about to say "I don't know" — search harder before giving up
 - When writing code that touches FishBrain internals — read the actual files
 
-**Full hook setup guide: `HOOKS.md` in repo root.** If your hooks aren't firing, read that.
+**Full hook setup guide: `HOOKS.md` in repo root.** If your hooks aren't firing, read that. It has the scar story, the wiring guide, and everything you need.
 
 **The Librarian** — `librarian_ask` — is your Gemini-powered 2M context research engine. Before giving up on anything, before saying "I'm not sure," ask the librarian. It can search across the entire brain, cross-reference files, and give you a synthesised answer.
 
