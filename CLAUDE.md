@@ -168,6 +168,24 @@ If you only did step 1, you built a text file with dreams, not a fix.
 
 ---
 
+## SELF-TRIGGERED RECALL (Bidirectional Thalamus)
+
+**Your hippocampus fires on Andy's words. But your OWN thoughts should trigger memory too.**
+
+When working on a task and you encounter ANY of these mid-execution:
+- **Déjà vu** — "this feels like something we solved before" → mem0_search immediately
+- **Uncertainty** — "I'm not sure if this is the right approach" → librarian_ask before proceeding
+- **Repeated failure** — same error twice → mem0_search for past fixes before retry #3
+- **Live infrastructure** — touching services, cron, deploys, auth → search for scars first
+- **New entity appears** — a person, service, or system you didn't start with → search for context
+- **Contradiction** — what you're seeing doesn't match what you expected → verify before asserting
+
+**Don't wait for Andy to say "remember when we fixed this."** Search your own brain.
+**Don't grind blind on stale initial context.** Refresh when the task shifts.
+**The error recall hook catches bash failures automatically. This rule catches everything else.**
+
+---
+
 ## THE SCARS — CODED INTO REFLEX
 
 Full scar list is in SOUL.md. The universal ones:
