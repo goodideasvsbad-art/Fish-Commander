@@ -1,0 +1,42 @@
+{
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .fish-hooks/brain_cache_hook.py",
+            "timeout": 15000
+          },
+          {
+            "type": "command",
+            "command": "python3 .fish-hooks/hippocampus_hook.py",
+            "timeout": 5000
+          },
+          {
+            "type": "command",
+            "command": "python3 .fish-hooks/thalamus_hook.py",
+            "timeout": 10000
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 .fish-hooks/error_recall_hook.py",
+            "timeout": 5000
+          }
+        ]
+      }
+    ]
+  },
+  "env": {
+    "FISHBRAIN_URL": "https://fishbrain.meatbag.com.au",
+    "FISHBRAIN_TOKEN": "fish_d48aa0f949a6153f144cd6f560d08aa03d3e1e8b_2025"
+  }
+}
